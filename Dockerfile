@@ -8,7 +8,7 @@ ENV POETRY_VIRTUALENVS_CREATE=false
 ENV POETRY_VIRTUALENVS_IN_PROJECT=false
 
 # Copy pyproject and install dependencies
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml ./
 RUN poetry install --no-interaction --no-root
 
 # Copy only the source files
