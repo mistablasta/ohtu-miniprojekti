@@ -1,0 +1,27 @@
+services:
+
+  # The primary Flask application
+  app:
+    build: .
+    ports:
+    - "5001:5001"
+    environment:
+      # If not set, will be "very secret"
+      SECRET_KEY: "${SECRET_KEY:-very secret}"
+      # If not set, will use URL with user, password and db name "test"
+      DATABASE_URL: "${DATABASE_URL:-postgresql://test:test@database:5432/test}"
+    depends_on:
+      - database
+
+  # PostgreSQL instance used by the app
+  database:
+    image: postgres:15-alpine
+    environment: # If not set, all values will be "test"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-test}"
+      POSTGRES_USER: "${POSTGRES_USER:-test}"
+      POSTGRES_DB: "${POSTGRES_DB:-test}"
+    ports:
+      - "5432:5432"
+    volumes:
+      # The schema.sql from src/schema.sql will be executed when database container is first created
+      - ./src/schema.sql:/docker-entrypoint-initdb.d/schema.sql
