@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Todo app
+{% endblock %}
+
+{% block body %}
+
+<h2>Add entry</h2>
+
+<body>
+    <div>
+        <form action="/create_entry" method="post">
+            <p>
+                Title
+                <input type="text" name="title" required/>
+            </p>
+            <p>
+                Year
+                <input type="text" name="year" required/>
+            </p>
+            <p>
+                Author
+                <input type="text" name="author" required/>
+            </p>
+            <p>
+                Publisher
+                <input type="text" name="publisher" required/>
+            </p>
+            <p>
+                Field
+                <input type="text" name="field"/>
+            </p>
+            <button type="submit">
+                Add entry
+            </button>
+        </form>
+    </div>
+</body>
+
+{% endblock %}

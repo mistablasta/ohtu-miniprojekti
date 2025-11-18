@@ -31,4 +31,20 @@ Todo app
   <a href="/new_todo">Create new todo</a>
 </div>
 
+<div>
+  <h2>Entries</h2>
+  <ul>
+    {% if entries %} {% for entry in entries%}
+    <li>{{ entry }}</li>
+    {% endfor %}
+    {% else %}
+    <p>No entries</p>
+    {% endif %}
+  </ul>
+</div>
+
+<div>
+  <a href="/new_entry">Add entry</a>
+</div>
+
 {% endblock %}

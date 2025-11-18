@@ -1,14 +1,16 @@
 from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
 from repositories.todo_repository import get_todos, create_todo, set_done
+from repositories.entry_repository import add_entry, get_entries
 from config import app, test_env
 from util import validate_todo
 
 @app.route("/")
 def index():
     todos = get_todos()
+    entries = get_entries()
     unfinished = len([todo for todo in todos if not todo.done])
-    return render_template("index.html", todos=todos, unfinished=unfinished) 
+    return render_template("index.html", todos=todos, unfinished=unfinished, entries=entries)
 
 @app.route("/new_todo")
 def new():
@@ -29,6 +31,25 @@ def todo_creation():
 @app.route("/toggle_todo/<todo_id>", methods=["POST"])
 def toggle_todo(todo_id):
     set_done(todo_id)
+    return redirect("/")
+
+
+#Entry functions
+@app.route("/new_entry")
+def new_entry():
+    return render_template("add_entry.html")
+
+@app.route("/create_entry", methods=["POST"])
+def create_entry():
+    title = request.form["title"]
+    year = request.form["year"]
+    author = request.form["author"]
+    publisher = request.form["publisher"]
+    field = request.form["field"]
+
+    add_entry(title, year, author, publisher, field)
+
+    flash("Entry added")
     return redirect("/")
 
 # testausta varten oleva reitti
