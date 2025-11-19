@@ -19,3 +19,9 @@ def add_entry(title, year, author, publisher, field):
                              "publisher": publisher, 
                              "field": field})
     db.session.commit()
+
+def delete_entry(entry_id):
+    """Add delete button for entrys"""
+    sql = text("DELETE FROM entry WHERE id = :id")
+    db.session.execute(sql, {"id": entry_id})
+    db.session.commit()

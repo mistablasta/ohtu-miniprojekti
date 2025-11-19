@@ -20,6 +20,11 @@ Bibliography App
         <p><strong>{{ key|capitalize }}:</strong> {{ value }}</p>
       {% endif %}
     {% endfor %}
+
+    <!-- Delete nappi -->
+    <form action="/delete_entry/{{ entry.id }}" method="post" style="margin-top: 10px;">
+      <button type="submit">Delete</button>
+    </form>
   </div>
   {% else %}
     <p>No entries found</p>

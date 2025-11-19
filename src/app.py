@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
 from repositories.todo_repository import get_todos, create_todo, set_done
-from repositories.entry_repository import add_entry, get_entries
+from repositories.entry_repository import add_entry, get_entries, delete_entry
 from config import app, test_env
 from util import validate_todo
 
@@ -63,3 +63,9 @@ if test_env:
     def reset_database():
         reset_db()
         return jsonify({ 'message': "db reset" })
+
+# delete nappi entrylle
+@app.route("/delete_entry/<entry_id>", methods=["POST"])
+def delete_entrys(entry_id):
+    delete_entry(entry_id)
+    return redirect("/")
