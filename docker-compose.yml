@@ -10,6 +10,7 @@ services:
       SECRET_KEY: "${SECRET_KEY:-very secret}"
       # If not set, will use URL with user, password and db name "test"
       DATABASE_URL: "${DATABASE_URL:-postgresql://test:test@database:5432/test}"
+      TEST_ENV: "${TEST_ENV:-false}"
     depends_on:
       - database
 
