@@ -2,12 +2,13 @@
 Library  SeleniumLibrary
 
 *** Variables ***
-${SERVER}     localhost:5001
-${DELAY}      0.5 seconds
-${HOME_URL}   http://${SERVER}
-${RESET_URL}  http://${SERVER}/reset_db
-${BROWSER}    chrome
-${HEADLESS}   false
+${SERVER}         localhost:5001
+${DELAY}          0.5 seconds
+${HOME_URL}       http://${SERVER}
+${ADD_ENTRY_URL}  http://${SERVER}/new_entry
+${RESET_URL}      http://${SERVER}/reset_db
+${BROWSER}        chrome
+${HEADLESS}       false
 
 *** Keywords ***
 Open And Configure Browser
@@ -26,6 +27,6 @@ Open And Configure Browser
     END
     Open Browser  browser=${BROWSER}  options=${options}
 
-Reset Todos
+Reset Entries
     Go To  ${RESET_URL}
 
