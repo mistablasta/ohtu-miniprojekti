@@ -4,7 +4,7 @@ import os
 
 def reset_db():
   print(f"Clearing contents from table todos")
-  sql = text(f"DELETE FROM todos")
+  sql = text(f"DELETE FROM entry")
   db.session.execute(sql)
   db.session.commit()
 
