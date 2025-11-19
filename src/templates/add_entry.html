@@ -10,26 +10,30 @@ Todo app
 
 <body>
     <div>
+        {% if error %}
+        <div class="alert">{{ error }}</div>
+        {% endif %}
+
         <form action="/create_entry" method="post">
             <p>
                 Title
-                <input type="text" name="title" required/>
+                <input type="text" name="title" required value="{{ form.title if form else '' }}"/>
             </p>
             <p>
                 Year
-                <input type="text" name="year" required/>
+                <input type="text" name="year" required value="{{ form.year if form else '' }}"/>
             </p>
             <p>
                 Author
-                <input type="text" name="author" required/>
+                <input type="text" name="author" required value="{{ form.author if form else '' }}"/>
             </p>
             <p>
                 Publisher
-                <input type="text" name="publisher" required/>
+                <input type="text" name="publisher" required value="{{ form.publisher if form else '' }}"/>
             </p>
             <p>
                 Field
-                <input type="text" name="field"/>
+                <input type="text" name="field" value="{{ form.field if form else '' }}"/>
             </p>
             <button type="submit">
                 Add entry

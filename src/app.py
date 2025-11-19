@@ -3,7 +3,8 @@ from db_helper import reset_db
 from repositories.todo_repository import get_todos, create_todo, set_done
 from repositories.entry_repository import add_entry, get_entries, delete_entry
 from config import app, test_env
-from util import validate_todo
+from util import validate_todo, validate_entry
+
 
 @app.route("/")
 def index():
@@ -52,6 +53,14 @@ def create_entry():
     publisher = request.form["publisher"]
     field = request.form["field"]
 
+    # Validate user input
+    error = validate_entry(request.form)
+
+    # Return the same page with an error message if validation failed
+    if error:
+        return render_template("add_entry.html", error=error, form=request.form)
+
+    # Add the entry to DB
     add_entry(title, year, author, publisher, field)
 
     flash("Entry added")

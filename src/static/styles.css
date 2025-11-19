@@ -30,3 +30,7 @@ body {
 .entry-card p {
     margin: 5px 0;
 }
+
+.alert {
+    color: red;
+}
