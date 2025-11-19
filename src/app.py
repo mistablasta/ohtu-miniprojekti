@@ -7,10 +7,15 @@ from util import validate_todo
 
 @app.route("/")
 def index():
-    todos = get_todos()
     entries = get_entries()
-    unfinished = len([todo for todo in todos if not todo.done])
-    return render_template("index.html", todos=todos, unfinished=unfinished, entries=entries)
+    entries_dict = [entry.__dict__ for entry in entries]
+    return render_template("index.html", entries_dict=entries_dict)
+
+@app.route("/all_entries", methods=["GET"])
+def get_all_entries():
+    entries = get_entries()
+    entries_json = [entry.__dict__ for entry in entries]
+    return jsonify(entries_json)
 
 @app.route("/new_todo")
 def new():

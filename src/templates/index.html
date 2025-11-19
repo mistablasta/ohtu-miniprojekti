@@ -1,50 +1,29 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Todo app
+Bibliography App
 {% endblock %}
 
 {% block body %}
 
-<h2>Todo app</h2>
-
-<div>
-  things still unfinished: {{ unfinished }}
-</div>
-
-<ul>
-  {% for todo in todos %}
-    <li style="display: flex">
-      <div>
-        {{ todo }} 
-      </div>
-      {% if not todo.done %}
-        <form action="/toggle_todo/{{ todo.id }}" method="post" style="margin-left: 10px;">
-          <button type="submit">mark as done</button>
-        </form>
-      {% endif %}
-    </li>
-  {% endfor %}
-</ul>
-
-<div>
-  <a href="/new_todo">Create new todo</a>
-</div>
-
-<div>
-  <h2>Entries</h2>
-  <ul>
-    {% if entries %} {% for entry in entries%}
-    <li>{{ entry }}</li>
-    {% endfor %}
-    {% else %}
-    <p>No entries</p>
-    {% endif %}
-  </ul>
-</div>
+<h2>Bibliography App</h2>
 
 <div>
   <a href="/new_entry">Add entry</a>
+</div>
+
+<div class="entries-container">
+  {% for entry in entries_dict %}
+  <div class="entry-card">
+    {% for key, value in entry.items() %}
+      {% if value and key != 'id' %}
+        <p><strong>{{ key|capitalize }}:</strong> {{ value }}</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% else %}
+    <p>No entries found</p>
+  {% endfor %}
 </div>
 
 {% endblock %}
