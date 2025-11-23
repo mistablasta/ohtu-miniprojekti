@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
 from repositories.todo_repository import get_todos, create_todo, set_done
-from repositories.entry_repository import add_entry, get_entries, delete_entry
+from repositories.entry_repository import add_entry, get_entries, delete_entry, search_entries
 from config import app, test_env
 from util import validate_todo, validate_entry
 
@@ -12,6 +12,7 @@ def index():
     entries_dict = [entry.__dict__ for entry in entries]
     return render_template("index.html", entries_dict=entries_dict)
 
+#GET endpoint
 @app.route("/all_entries", methods=["GET"])
 def get_all_entries():
     entries = get_entries()
@@ -78,3 +79,11 @@ if test_env:
 def delete_entrys(entry_id):
     delete_entry(entry_id)
     return redirect("/")
+
+# search function
+@app.route("/search")
+def search():
+    query = request.args.get("query", "")
+    entries = search_entries(query)
+    entries_dict = [entry.__dict__ for entry in entries]
+    return render_template("index.html", entries_dict=entries_dict, query=query)

@@ -12,6 +12,20 @@ Bibliography App
   <a href="/new_entry">Add entry</a>
 </div>
 
+<!-- Search ominaisuus -->
+<div style="margin: 20px 0;">
+  <form action="/search" method="get">
+    <input
+      type="text"
+      name="query"
+      placeholder="Search entries..."
+      value="{{ query | default('') }}"
+    >
+    <button type="submit">Search</button>
+  </form>
+</div>
+
+<!-- Näyttäää entryt -->
 <div class="entries-container">
   {% for entry in entries_dict %}
   <div class="entry-card">
