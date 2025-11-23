@@ -12,11 +12,17 @@ def get_entries():
 def search_entries(search):
     """Search entries from database"""
     sql = text("""SELECT id, title, year, author, publisher, field FROM entry
-                                        WHERE title LIKE :search
-                                        OR author LIKE :search
-                                        OR publisher LIKE :search
-                                        OR field LIKE :search""")
-    result = db.session.execute(sql, {"search": f"%{search}%"})
+                                        WHERE title ILIKE :search
+                                        OR author ILIKE :search
+                                        OR publisher ILIKE :search
+                                        OR year = :year""")
+    
+    try:
+        year_search = int(search)
+    except ValueError:
+        year_search = None
+
+    result = db.session.execute(sql, {"search": f"%{search}%", "year": year_search})
     entries = result.fetchall()
     return [Entry(entry[0], entry[1], entry[2], entry[3], entry[4], entry[5]) for entry in entries]
 
