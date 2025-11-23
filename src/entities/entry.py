@@ -1,6 +1,6 @@
 class Entry:
-    def __init__(self, id, title, year, author, publisher, field):
-        self.id = id
+    def __init__(self, entry_id, title, year, author, publisher, field):    # pylint: disable=too-many-positional-arguments
+        self.id = entry_id
         self.title = title
         self.year = year
         self.author = author

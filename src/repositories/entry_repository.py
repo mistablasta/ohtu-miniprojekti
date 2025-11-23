@@ -1,6 +1,5 @@
-from config import db
 from sqlalchemy import text
-
+from config import db
 from entities.entry import Entry
 
 def get_entries():

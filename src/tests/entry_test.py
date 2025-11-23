@@ -7,11 +7,11 @@ class TestEntry(unittest.TestCase):
         """
         Test that all attributes are set correctly
         """
-        entry = Entry(id=1,
-                      title="Basic Title", 
-                      year=2025, 
-                      author="Jane Smith", 
-                      publisher="Basic Publisher", 
+        entry = Entry(entry_id=1,
+                      title="Basic Title",
+                      year=2025,
+                      author="Jane Smith",
+                      publisher="Basic Publisher",
                       field="Basic Field")
 
         self.assertEqual(entry.id, 1)
@@ -26,11 +26,11 @@ class TestEntry(unittest.TestCase):
         Test that the string representation of the Entry object
         returns the correct format: "author, year"
         """
-        entry = Entry(id=1,
-                      title="Title", 
-                      year=2025, 
-                      author="John Doe", 
-                      publisher="Publisher", 
+        entry = Entry(entry_id=1,
+                      title="Title",
+                      year=2025,
+                      author="John Doe",
+                      publisher="Publisher",
                       field="Field")
         expected_str = "John Doe, 2025"
         self.assertEqual(str(entry), expected_str)
