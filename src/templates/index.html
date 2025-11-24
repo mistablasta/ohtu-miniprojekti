@@ -27,9 +27,9 @@ Bibliography App
 
 <!-- Näyttäää entryt -->
 <div class="entries-container">
-  {% for entry in entries_dict %}
+  {% for entry in entries %}
   <div class="entry-card">
-    {% for key, value in entry.items() %}
+    {% for key, value in entry.fields.items() %}
       {% if value and key != 'id' %}
         <p><strong>{{ key|capitalize }}:</strong> {{ value }}</p>
       {% endif %}

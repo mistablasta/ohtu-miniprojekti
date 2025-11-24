@@ -10,6 +10,9 @@ def create(key: str, type: Type, fields: dict):
     """
     Create a new entry
     """
+    if fields is None:
+        fields = dict()
+
     sql = text("""
         INSERT INTO entries (key, type, fields)
         VALUES (:key, :type, :fields)
@@ -36,9 +39,11 @@ def get_all() -> list[Entry]:
     """
     Get all entries
     """
-    sql = text("""SELECT * FROM entries""")
+    sql = text("""
+        SELECT id, key, type, fields FROM entries
+    """)
     result = db.session.execute(sql)
-    return _parse_entries(result)
+    return _parse_entries(result.fetchall())
 
 def delete(id: int):
     """
@@ -46,6 +51,7 @@ def delete(id: int):
     """
     sql = text("""DELETE FROM entries WHERE id = :id""")
     db.session.execute(sql, {"id": id})
+    db.session.commit()
 
 def update(entry: Entry):
     """
@@ -53,10 +59,13 @@ def update(entry: Entry):
     """
     sql = text("""
         UPDATE entries
+        SET key = :key, type = :type, fields = :fields
+        WHERE id = :id
     """)
     db.session.execute(sql, {
+        "id": entry.id,
         "key": entry.key,
-        "type": entry.type,
+        "type": entry.type.name.lower(),
         "fields": json.dumps(entry.fields)
     })
     db.session.commit()
@@ -106,63 +115,3 @@ def _parse_entry(result) -> Entry | None:
     fields_dict = json.loads(fields_json) if isinstance(fields_json, str) else fields_json
 
     return Entry(id=id, key=key, type=type_enum, fields=fields_dict)
-
-
-#-------------------------------------
-
-def get_entries():
-    """Get entries from database"""
-    result = db.session.execute(text("SELECT id, title, year, author, publisher, field FROM entry"))
-    entries = result.fetchall()
-    return [Entry(entry[0], entry[1], entry[2], entry[3], entry[4], entry[5]) for entry in entries]
-
-def search_entries(search):
-    """Search entries from database"""
-    sql = text("""SELECT id, title, year, author, publisher, field FROM entry
-                                        WHERE title ILIKE :search
-                                        OR author ILIKE :search
-                                        OR publisher ILIKE :search
-                                        OR year = :year""")
-
-    try:
-        year_search = int(search)
-    except ValueError:
-        year_search = None
-
-    result = db.session.execute(sql, {"search": f"%{search}%", "year": year_search})
-    entries = result.fetchall()
-    return [Entry(entry[0], entry[1], entry[2], entry[3], entry[4], entry[5]) for entry in entries]
-
-def add_entry(title, year, author, publisher, field):
-    """Add entry to database"""
-    sql = text("""INSERT INTO entry (title, year, author, publisher, field)
-                  VALUES (:title, :year, :author, :publisher, :field)""")
-    db.session.execute(sql, {"title": title,
-                             "year": year,
-                             "author": author ,
-                             "publisher": publisher,
-                             "field": field})
-    db.session.commit()
-
-def delete_entry(entry_id):
-    """Add delete button for entrys"""
-    sql = text("DELETE FROM entry WHERE id = :id")
-    db.session.execute(sql, {"id": entry_id})
-    db.session.commit()
-
-def get_entry_by_id(entry_id):
-    """Get single entry by ID"""
-    sql = text("SELECT id, title, year, author, publisher, field FROM entry WHERE id = :id")
-    result = db.session.execute(sql, {"id": entry_id})
-    entry = result.fetchone()
-    return Entry(entry[0], entry[1], entry[2], entry[3], entry[4], entry[5])
-
-def update_entry_in_db(entry_id, title, year, author, publisher, field):
-    """Update entry in database"""
-    sql = text("""UPDATE entry
-                  SET title = :title, year = :year, author = :author,
-                      publisher = :publisher, field = :field
-                  WHERE id = :id""")
-    db.session.execute(sql, {"id": entry_id, "title": title, "year": year,
-                            "author": author, "publisher": publisher, "field": field})
-    db.session.commit()

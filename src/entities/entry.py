@@ -27,6 +27,9 @@ class Entry:
     def get_field(self, field_key: str):
         return self.fields.get(field_key)
 
+    def set_field(self, field_key: str, value):
+        self.fields[field_key] = value
+
     def get_title(self):
         if not self.has_field(Fields.TITLE):
             return None
