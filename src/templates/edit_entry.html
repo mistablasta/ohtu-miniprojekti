@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<h2>Edit Entry</h2>
+
+<form action="/update_entry/{{ entry.id }}" method="post">
+  <div>
+    <label>Title:</label>
+    <input type="text" name="title" value="{{ entry.title }}" required>
+  </div>
+  <div>
+    <label>Year:</label>
+    <input type="number" name="year" value="{{ entry.year }}" required>
+  </div>
+  <div>
+    <label>Author:</label>
+    <input type="text" name="author" value="{{ entry.author }}" required>
+  </div>
+  <div>
+    <label>Publisher:</label>
+    <input type="text" name="publisher" value="{{ entry.publisher }}">
+  </div>
+  <div>
+    <label>Field:</label>
+    <input type="text" name="field" value="{{ entry.field }}">
+  </div>
+  
+  <button type="submit">Save</button>
+  <a href="/">Cancel</a>
+</form>
+{% endblock %}
