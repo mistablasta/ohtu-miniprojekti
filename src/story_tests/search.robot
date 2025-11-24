@@ -65,5 +65,6 @@ Deleting a searched entry works
     Wait Until Page Contains  2000
     Wait Until Page Contains  Author
     Click Button  Delete
+    Handle Alert  action=ACCEPT
     Page Should Contain  No entries found
     Reset Entries
