@@ -1,5 +1,5 @@
-from config import db
 from sqlalchemy import text
+from config import db
 
 from entities.entry import Entry
 
@@ -16,7 +16,7 @@ def search_entries(search):
                                         OR author ILIKE :search
                                         OR publisher ILIKE :search
                                         OR year = :year""")
-    
+
     try:
         year_search = int(search)
     except ValueError:
@@ -41,4 +41,21 @@ def delete_entry(entry_id):
     """Add delete button for entrys"""
     sql = text("DELETE FROM entry WHERE id = :id")
     db.session.execute(sql, {"id": entry_id})
+    db.session.commit()
+
+def get_entry_by_id(entry_id):
+    """Get single entry by ID"""
+    sql = text("SELECT id, title, year, author, publisher, field FROM entry WHERE id = :id")
+    result = db.session.execute(sql, {"id": entry_id})
+    entry = result.fetchone()
+    return Entry(entry[0], entry[1], entry[2], entry[3], entry[4], entry[5])
+
+def update_entry_in_db(entry_id, title, year, author, publisher, field):
+    """Update entry in database"""
+    sql = text("""UPDATE entry
+                  SET title = :title, year = :year, author = :author,
+                      publisher = :publisher, field = :field
+                  WHERE id = :id""")
+    db.session.execute(sql, {"id": entry_id, "title": title, "year": year,
+                            "author": author, "publisher": publisher, "field": field})
     db.session.commit()

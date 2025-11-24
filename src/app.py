@@ -1,7 +1,14 @@
 from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
 from repositories.todo_repository import get_todos, create_todo, set_done
-from repositories.entry_repository import add_entry, get_entries, delete_entry, search_entries
+from repositories.entry_repository import (
+    add_entry,
+    get_entries,
+    delete_entry,
+    search_entries,
+    get_entry_by_id,
+    update_entry_in_db
+)
 from config import app, test_env
 from util import validate_todo, validate_entry
 
@@ -80,6 +87,24 @@ def delete_entrys(entry_id):
     delete_entry(entry_id)
     return redirect("/")
 
+# edit nappi entrylle
+@app.route("/edit_entry/<entry_id>")
+def edit_entry_form(entry_id):
+    entry = get_entry_by_id(entry_id)
+    return render_template("edit_entry.html", entry=entry)
+
+@app.route("/update_entry/<entry_id>", methods=["POST"])
+def update_entry(entry_id):
+    title = request.form["title"]
+    year = request.form["year"]
+    author = request.form["author"]
+    publisher = request.form["publisher"]
+    field = request.form["field"]
+
+    update_entry_in_db(entry_id, title, year, author, publisher, field)
+    flash("Entry updated")
+    return redirect("/")
+
 # search function
 @app.route("/search")
 def search():
@@ -87,3 +112,6 @@ def search():
     entries = search_entries(query)
     entries_dict = [entry.__dict__ for entry in entries]
     return render_template("index.html", entries_dict=entries_dict, query=query)
+
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0', port=5001)
