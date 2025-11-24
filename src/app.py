@@ -112,6 +112,3 @@ def search():
     entries = search_entries(query)
     entries_dict = [entry.__dict__ for entry in entries]
     return render_template("index.html", entries_dict=entries_dict, query=query)
-
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5001)
