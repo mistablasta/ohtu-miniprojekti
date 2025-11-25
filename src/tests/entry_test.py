@@ -1,36 +1,35 @@
 import unittest
-from entities.entry import Entry
+from entities.entry import Entry, Type, Fields
+
 
 class TestEntry(unittest.TestCase):
 
-    def test_entry_initialization(self):
-        """
-        Test that all attributes are set correctly
-        """
-        entry = Entry(id=1,
-                      title="Basic Title", 
-                      year=2025, 
-                      author="Jane Smith", 
-                      publisher="Basic Publisher", 
-                      field="Basic Field")
+    def test_fields_operations(self):
+        entry = Entry(1, "key1", Type.BOOK, {
+            Fields.TITLE: "Book",
+            Fields.AUTHOR: "Author"
+        })
 
-        self.assertEqual(entry.id, 1)
-        self.assertEqual(entry.title, "Basic Title")
-        self.assertEqual(entry.year, 2025)
-        self.assertEqual(entry.author, "Jane Smith")
-        self.assertEqual(entry.publisher, "Basic Publisher")
-        self.assertEqual(entry.field, "Basic Field")
+        # test has_field, get_field, set_field
+        self.assertTrue(entry.has_field(Fields.TITLE))
+        self.assertEqual(entry.get_field(Fields.TITLE), "Book")
+        self.assertIsNone(entry.get_field(Fields.PUBLISHER))
 
-    def test_entry_str(self):
-        """
-        Test that the string representation of the Entry object
-        returns the correct format: "author, year"
-        """
-        entry = Entry(id=1,
-                      title="Title", 
-                      year=2025, 
-                      author="John Doe", 
-                      publisher="Publisher", 
-                      field="Field")
-        expected_str = "John Doe, 2025"
-        self.assertEqual(str(entry), expected_str)
+        entry.set_field(Fields.YEAR, 2025)
+        self.assertTrue(entry.has_field(Fields.YEAR))
+        self.assertEqual(entry.get_field(Fields.YEAR), 2025)
+
+        # test get_title
+        self.assertEqual(entry.get_title(), "Book")
+        entry_no_title = Entry(2, "key2", Type.ARTICLE, {})
+        self.assertIsNone(entry_no_title.get_title())
+
+    def test_enum_and_str(self):
+        entry = Entry(3, "key3", Type.ARTICLE, {Fields.JOURNAL: "Journal"})
+        self.assertEqual(entry.type, Type.ARTICLE)
+
+        s = str(entry)
+        self.assertIn("id=3", s)
+        self.assertIn("key=key3", s)
+        self.assertIn("type=Type.ARTICLE", s)
+        self.assertIn("fields", s)
