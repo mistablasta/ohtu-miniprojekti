@@ -85,6 +85,8 @@ def search(query: str, filter):
         order_sql = "fields->>'year' DESC"
     elif filter == "id":
         order_sql = "id DESC"
+    else:
+        order_sql = "id DESC"
 
     sql = text(f"""
        SELECT id, key, type, fields

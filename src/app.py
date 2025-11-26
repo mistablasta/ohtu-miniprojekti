@@ -131,4 +131,3 @@ def search():
     filter = request.args.get("filter", "id")
     entries = repository.search(query, filter)
     return render_template("index.html", entries=entries, query=query, filter=filter)
-
