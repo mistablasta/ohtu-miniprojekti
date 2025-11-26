@@ -11,7 +11,7 @@ def create(key: str, type: Type, fields: dict):
     Create a new entry
     """
     if fields is None:
-        fields = dict()
+        fields = {}
 
     sql = text("""
         INSERT INTO entries (key, type, fields)
@@ -84,6 +84,8 @@ def search(query: str, filter):
     elif filter == "year_desc":
         order_sql = "fields->>'year' DESC"
     elif filter == "id":
+        order_sql = "id DESC"
+    else:
         order_sql = "id DESC"
 
     sql = text(f"""
