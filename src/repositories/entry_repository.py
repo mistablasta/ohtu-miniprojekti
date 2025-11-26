@@ -11,7 +11,7 @@ def create(key: str, type: Type, fields: dict):
     Create a new entry
     """
     if fields is None:
-        fields = dict()
+        fields = {}
 
     sql = text("""
         INSERT INTO entries (key, type, fields)

@@ -3,10 +3,10 @@ from db_helper import reset_db
 from entities.entry import (
     Type,
     Fields,
-    Entry,
+    #Entry,
 )
 from repositories import entry_repository as repository
-from repositories.todo_repository import get_todos, create_todo, set_done
+#from repositories.todo_repository import set_done #get_todos, #create_todo
 from config import app, test_env
 from util import validate_entry #, validate_todo
 
@@ -39,10 +39,10 @@ def new():
         #flash(str(error))
         #return  redirect("/new_todo")
 
-@app.route("/toggle_todo/<todo_id>", methods=["POST"])
-def toggle_todo(todo_id):
-    set_done(todo_id)
-    return redirect("/")
+#@app.route("/toggle_todo/<todo_id>", methods=["POST"])
+#def toggle_todo(todo_id):
+    #set_done(todo_id)
+    #return redirect("/")
 
 
 #Entry functions
@@ -66,12 +66,13 @@ def create_entry():
         return render_template("add_entry.html", error=error, form=request.form)
 
     # Define the fields
-    fields = dict()
-    fields[Fields.TITLE] = title
-    fields[Fields.YEAR] = year
-    fields[Fields.AUTHOR] = author
-    fields[Fields.PUBLISHER] = publisher
-    fields["field"] = field
+    fields = {
+    Fields.TITLE: title,
+    Fields.YEAR: year,
+    Fields.AUTHOR: author,
+    Fields.PUBLISHER: publisher,
+    "field": field,
+    }
 
     # Create the entry
     repository.create("test", Type.BOOK, fields)
@@ -89,16 +90,20 @@ if test_env:
 # delete nappi entrylle
 @app.route("/delete_entry/<entry_id>", methods=["POST"])
 def delete_entrys(entry_id):
-    # TODO VALIDATE
-    repository.delete(int(entry_id))
-    return redirect("/")
+    try:
+        repository.delete(int(entry_id))
+        return redirect("/")
+    except ValueError:
+        return redirect("/")
 
 # edit nappi entrylle
 @app.route("/edit_entry/<entry_id>")
 def edit_entry_form(entry_id):
-    # TODO VALIDATE
-    entry = repository.get(int(entry_id))
-    return render_template("edit_entry.html", entry=entry)
+    try:
+        entry = repository.get(int(entry_id))
+        return render_template("edit_entry.html", entry=entry)
+    except ValueError:
+        return redirect("/")
 
 @app.route("/update_entry/<entry_id>", methods=["POST"])
 def update_entry(entry_id):
