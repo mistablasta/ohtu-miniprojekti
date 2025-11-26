@@ -5,7 +5,8 @@ Suite Teardown   Close Browser
 
 *** Test Cases ***
 Searching a valid entry by title works
-    Go To  ${ADD_ENTRY_URl}
+    Reset Entries
+    Go To  ${ADD_ENTRY_URL}
     Input Text  title  Book
     Input Text  year  2000
     Input Text  author  Author

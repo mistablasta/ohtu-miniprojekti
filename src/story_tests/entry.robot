@@ -17,7 +17,7 @@ Adding entry redirects to form
     Page Should Contain  Add entry
 
 Adding valid entry works
-    Go To  ${ADD_ENTRY_URl}
+    Go To  ${ADD_ENTRY_URL}
     Input Text  title  Book
     Input Text  year  2000
     Input Text  author  Author
@@ -28,7 +28,7 @@ Adding valid entry works
     Page Should Contain  2000
 
 Adding invalid entry year fails
-    Go To  ${ADD_ENTRY_URl}
+    Go To  ${ADD_ENTRY_URL}
     Input Text  title  Book
     Input Text  year  Book
     Input Text  author  Author
@@ -37,7 +37,7 @@ Adding invalid entry year fails
     Page Should Contain  Year must be a number
 
 Adding invalid entry title fails
-    Go To  ${ADD_ENTRY_URl}
+    Go To  ${ADD_ENTRY_URL}
     Input Text  title  ${SPACE}
     Input Text  year  2000
     Input Text  author  Author
@@ -46,7 +46,7 @@ Adding invalid entry title fails
     Page Should Contain  Please input a valid title
 
 Adding and removing valid entry works
-    Go To  ${ADD_ENTRY_URl}
+    Go To  ${ADD_ENTRY_URL}
     Input Text  title  Book
     Input Text  year  2000
     Input Text  author  Author

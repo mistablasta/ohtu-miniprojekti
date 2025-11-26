@@ -124,9 +124,11 @@ def update_entry(entry_id):
     flash("Entry updated")
     return redirect("/")
 
-# search function
+# search and filter function
 @app.route("/search")
 def search():
     query = request.args.get("query", "")
-    entries = repository.search(query)
-    return render_template("index.html", entries=entries, query=query)
+    filter = request.args.get("filter", "id")
+    entries = repository.search(query, filter)
+    return render_template("index.html", entries=entries, query=query, filter=filter)
+

@@ -70,12 +70,23 @@ def update(entry: Entry):
     })
     db.session.commit()
 
-def search(query: str):
+def search(query: str, filter):
     """
     Search all entries matching the given string query.
     This method will look for values in the fields or the entry key matching the query string.
     """
-    sql = text("""
+    if filter == "title_asc":
+        order_sql = "fields->>'title' ASC"
+    elif filter == "title_desc":
+        order_sql = "fields->>'title' DESC"
+    elif filter == "year_asc":
+        order_sql = "fields->>'year' ASC"
+    elif filter == "year_desc":
+        order_sql = "fields->>'year' DESC"
+    elif filter == "id":
+        order_sql = "id DESC"
+
+    sql = text(f"""
        SELECT id, key, type, fields
        FROM entries
        WHERE EXISTS (
@@ -84,6 +95,7 @@ def search(query: str):
            WHERE value ILIKE :query
        )
        OR key ILIKE :query
+       ORDER BY {order_sql}
    """)
 
     result = db.session.execute(sql, {"query": f"%{query}%"})

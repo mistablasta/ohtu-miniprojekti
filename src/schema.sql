@@ -18,4 +18,4 @@ CREATE TABLE entries (
     key TEXT NOT NULL,
     type TEXT NOT NULL,
     fields JSONB NOT NULL
-)
+);
