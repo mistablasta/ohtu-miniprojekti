@@ -15,26 +15,72 @@ Todo app
         {% endif %}
 
         <form action="/create_entry" method="post">
-            <p>
-                Title
-                <input type="text" name="title" required value="{{ form.title if form else '' }}"/>
-            </p>
-            <p>
-                Year
-                <input type="text" name="year" required value="{{ form.year if form else '' }}"/>
-            </p>
-            <p>
-                Author
-                <input type="text" name="author" required value="{{ form.author if form else '' }}"/>
-            </p>
-            <p>
-                Publisher
-                <input type="text" name="publisher" required value="{{ form.publisher if form else '' }}"/>
-            </p>
-            <p>
-                Field
-                <input type="text" name="field" value="{{ form.field if form else '' }}"/>
-            </p>
+            <input type="hidden" name="type" value="{{ entry_type }}">
+
+            {% if entry_type == 'book' %}
+                <h2>Add Book</h2>
+                <p>
+                    Title
+                    <input type="text" name="title" required value="{{ form.title if form else '' }}"/>
+                </p>
+                <p>
+                    Year
+                    <input type="text" name="year" required value="{{ form.year if form else '' }}"/>
+                </p>
+                    <p>
+                    Author
+                    <input type="text" name="author" required value="{{ form.author if form else '' }}"/>
+                </p>
+                <p>
+                    Publisher
+                    <input type="text" name="publisher" required value="{{ form.publisher if form else '' }}"/>
+                </p>
+                <p>
+                    Field
+                    <input type="text" name="field" value="{{ form.field if form else '' }}"/>
+                </p>
+            {% elif entry_type == 'article' %}
+                <h2>Add Article</h2>
+                <p>
+                    Title
+                    <input type="text" name="title" required value="{{ form.title if form else '' }}"/>
+                </p>
+                <p>
+                    Year
+                    <input type="text" name="year" required value="{{ form.year if form else '' }}"/>
+                </p>
+                <p>
+                    Author
+                    <input type="text" name="author" required value="{{ form.author if form else '' }}"/>
+                </p>
+                <p>
+                    Journal
+                    <input type="text" name="journal" required value="{{ form.journal if form else '' }}"/>
+                </p>
+            {% elif entry_type == 'misc' %}
+                <h2>Add Misc</h2>
+                <p>
+                    Title
+                    <input type="text" name="title" required value="{{ form.title if form else '' }}"/>
+                </p>
+                <p>
+                    Year
+                    <input type="text" name="year" required value="{{ form.year if form else '' }}"/>
+                </p>
+                <p>
+                    Author
+                    <input type="text" name="author" value="{{ form.author if form else '' }}"/>
+                </p>
+                <p>
+                    Note
+                    <input type="text" name="note" value="{{ form.note if form else '' }}"/>
+                </p>
+                <p>
+                    URL
+                    <input type="text" name="url" value="{{ form.url if form else '' }}"/>
+                </p>
+            {% endif %}
+            
             <button type="submit">
                 Add entry
             </button>
