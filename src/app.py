@@ -2,8 +2,6 @@ from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
 from entities.entry import (
     Type,
-    Fields,
-    #Entry,
 )
 from repositories import entry_repository as repository
 #from repositories.todo_repository import set_done #get_todos, #create_todo
@@ -48,10 +46,10 @@ def new():
 def get_type_enum(type_str):
     if type_str == "book":
         return Type.BOOK
-    elif type_str == "article":
+    if type_str == "article":
         return Type.ARTICLE
-    else:
-        return Type.MISC
+
+    return Type.MISC
 
 #Entry functions
 @app.route("/new_entry")
@@ -78,7 +76,12 @@ def create_entry():
 
     # Return the same page with an error message if validation failed
     if error:
-        return render_template("add_entry.html", error=error, form=request.form, entry_type=entry_type_str)
+        return render_template(
+            "add_entry.html",
+            error=error,
+            form=request.form,
+            entry_type=entry_type_str
+        )
 
     # Create the entry
     repository.create("test", entry_type, fields)

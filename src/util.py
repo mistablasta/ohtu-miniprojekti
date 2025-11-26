@@ -8,6 +8,7 @@ def validate_todo(content):
     if len(content) > 100:
         raise UserInputError("Todo content length must be smaller than 100")
 
+# pylint: disable=too-many-return-statements
 def validate_entry(form) -> str | None:
     """
     Validate that the form submitted by the user for an entry is correct.
@@ -33,7 +34,7 @@ def validate_entry(form) -> str | None:
             return "Author is a required field for books."
         if not _is_valid_string(publisher):
             return "Publisher is a required field for books."
-            
+
     elif entry_type == 'article':
         author = form.get("author")
         journal = form.get("journal")
