@@ -54,4 +54,5 @@ Adding and removing valid entry works
     Click Button  Add entry
     Wait Until Location Contains  ${HOME_URL}
     Click Button  Delete
+    Handle Alert  action=ACCEPT
     Page Should Contain  No entries found

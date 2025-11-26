@@ -7,7 +7,7 @@ ${DELAY}          0.5 seconds
 ${HOME_URL}       http://${SERVER}
 ${ADD_ENTRY_URL}  http://${SERVER}/new_entry
 ${RESET_URL}      http://${SERVER}/reset_db
-${BROWSER}        chrome
+${BROWSER}        firefox
 ${HEADLESS}       false
 
 *** Keywords ***

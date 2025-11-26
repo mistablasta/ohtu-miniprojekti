@@ -1,20 +1,25 @@
 from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
-from repositories.todo_repository import set_done #, create_todo
-from repositories.entry_repository import add_entry, get_entries, delete_entry
+from entities.entry import (
+    Type,
+    Fields,
+    Entry,
+)
+from repositories import entry_repository as repository
+from repositories.todo_repository import get_todos, create_todo, set_done
 from config import app, test_env
 from util import validate_entry #, validate_todo
 
 
 @app.route("/")
 def index():
-    entries = get_entries()
-    entries_dict = [entry.__dict__ for entry in entries]
-    return render_template("index.html", entries_dict=entries_dict)
+    entries = repository.get_all()
+    return render_template("index.html", entries=entries)
 
+#GET endpoint
 @app.route("/all_entries", methods=["GET"])
 def get_all_entries():
-    entries = get_entries()
+    entries = repository.get_all()
     entries_json = [entry.__dict__ for entry in entries]
     return jsonify(entries_json)
 
@@ -60,8 +65,16 @@ def create_entry():
     if error:
         return render_template("add_entry.html", error=error, form=request.form)
 
-    # Add the entry to DB
-    add_entry(title, year, author, publisher, field)
+    # Define the fields
+    fields = dict()
+    fields[Fields.TITLE] = title
+    fields[Fields.YEAR] = year
+    fields[Fields.AUTHOR] = author
+    fields[Fields.PUBLISHER] = publisher
+    fields["field"] = field
+
+    # Create the entry
+    repository.create("test", Type.BOOK, fields)
 
     flash("Entry added")
     return redirect("/")
@@ -76,5 +89,39 @@ if test_env:
 # delete nappi entrylle
 @app.route("/delete_entry/<entry_id>", methods=["POST"])
 def delete_entrys(entry_id):
-    delete_entry(entry_id)
+    # TODO VALIDATE
+    repository.delete(int(entry_id))
     return redirect("/")
+
+# edit nappi entrylle
+@app.route("/edit_entry/<entry_id>")
+def edit_entry_form(entry_id):
+    # TODO VALIDATE
+    entry = repository.get(int(entry_id))
+    return render_template("edit_entry.html", entry=entry)
+
+@app.route("/update_entry/<entry_id>", methods=["POST"])
+def update_entry(entry_id):
+    title = request.form["title"]
+    year = request.form["year"]
+    author = request.form["author"]
+    publisher = request.form["publisher"]
+    field = request.form["field"]
+
+    entry = repository.get(entry_id)
+    entry.set_field(Fields.TITLE, title)
+    entry.set_field(Fields.YEAR, year)
+    entry.set_field(Fields.AUTHOR, author)
+    entry.set_field(Fields.PUBLISHER, publisher)
+    entry.set_field("field", field)
+
+    repository.update(entry)
+    flash("Entry updated")
+    return redirect("/")
+
+# search function
+@app.route("/search")
+def search():
+    query = request.args.get("query", "")
+    entries = repository.search(query)
+    return render_template("index.html", entries=entries, query=query)
