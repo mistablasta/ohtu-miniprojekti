@@ -3,12 +3,12 @@ from db_helper import reset_db
 from entities.entry import (
     Type,
     Fields,
-    Entry,
+    #Entry,
 )
 from repositories import entry_repository as repository
-from repositories.todo_repository import get_todos, create_todo, set_done
+#from repositories.todo_repository import set_done #get_todos, #create_todo
 from config import app, test_env
-from util import validate_todo, validate_entry
+from util import validate_entry #, validate_todo
 
 
 @app.route("/")
@@ -27,22 +27,22 @@ def get_all_entries():
 def new():
     return render_template("new_todo.html")
 
-@app.route("/create_todo", methods=["POST"])
-def todo_creation():
-    content = request.form.get("content")
+#@app.route("/create_todo", methods=["POST"])
+#def todo_creation():
+    #content = request.form.get("content")
 
-    try:
-        validate_todo(content)
-        create_todo(content)
-        return redirect("/")
-    except Exception as error:
-        flash(str(error))
-        return  redirect("/new_todo")
+    #try:
+        #validate_todo(content)
+        #create_todo(content)
+        #return redirect("/")
+    #except Exception as error:
+        #flash(str(error))
+        #return  redirect("/new_todo")
 
-@app.route("/toggle_todo/<todo_id>", methods=["POST"])
-def toggle_todo(todo_id):
-    set_done(todo_id)
-    return redirect("/")
+#@app.route("/toggle_todo/<todo_id>", methods=["POST"])
+#def toggle_todo(todo_id):
+    #set_done(todo_id)
+    #return redirect("/")
 
 
 def get_type_enum(type_str):
@@ -96,16 +96,20 @@ if test_env:
 # delete nappi entrylle
 @app.route("/delete_entry/<entry_id>", methods=["POST"])
 def delete_entrys(entry_id):
-    # TODO VALIDATE
-    repository.delete(int(entry_id))
-    return redirect("/")
+    try:
+        repository.delete(int(entry_id))
+        return redirect("/")
+    except ValueError:
+        return redirect("/")
 
 # edit nappi entrylle
 @app.route("/edit_entry/<entry_id>")
 def edit_entry_form(entry_id):
-    # TODO VALIDATE
-    entry = repository.get(int(entry_id))
-    return render_template("edit_entry.html", entry=entry)
+    try:
+        entry = repository.get(int(entry_id))
+        return render_template("edit_entry.html", entry=entry)
+    except ValueError:
+        return redirect("/")
 
 @app.route("/update_entry/<entry_id>", methods=["POST"])
 def update_entry(entry_id):
@@ -115,16 +119,17 @@ def update_entry(entry_id):
     for key, value in request.form.items():
         if key != "type":
             fields[key] = value
-    
+
     entry.fields = fields
 
     repository.update(entry)
     flash("Entry updated")
     return redirect("/")
 
-# search function
+# search and filter function
 @app.route("/search")
 def search():
     query = request.args.get("query", "")
-    entries = repository.search(query)
-    return render_template("index.html", entries=entries, query=query)
+    filter = request.args.get("filter", "id")
+    entries = repository.search(query, filter)
+    return render_template("index.html", entries=entries, query=query, filter=filter)
