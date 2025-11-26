@@ -20,7 +20,7 @@ def validate_entry(form) -> str | None:
     year = form.get("year")
 
     if not _is_valid_string(title):
-        return "Please input a valid title"
+        return "Title is a required field."
 
     if not year.isdigit():
         return "Year must be a number."
