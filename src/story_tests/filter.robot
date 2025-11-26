@@ -7,19 +7,19 @@ Suite Teardown   Close Browser
 Filter a valid entry by title
     Reset Entries
     Go To  ${HOME_URL}
-    Go To  ${ADD_ENTRY_URL}
+    Go To  ${ADD_ENTRY_FORM_URL}?type=book
     Input Text  title  Book
     Input Text  year  2000
     Input Text  author  Author
     Input Text  publisher  Publisher
     Click Button  Add entry
-    Go To  ${ADD_ENTRY_URL}
+    Go To  ${ADD_ENTRY_FORM_URL}?type=book
     Input Text  title  ABook
     Input Text  year  2001
     Input Text  author  Author
     Input Text  publisher  Publisher
     Click Button  Add entry
-    Go To  ${ADD_ENTRY_URL}
+    Go To  ${ADD_ENTRY_FORM_URL}?type=book
     Input Text  title  CBook
     Input Text  year  2002
     Input Text  author  Author
