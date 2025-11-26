@@ -53,7 +53,7 @@ Adding invalid entry title fails
     Input Text  author  Author
     Input Text  publisher  Publisher
     Click Button  Add entry
-    Page Should Contain  Please input a valid title
+    Page Should Contain  Title is a required field.
 
 Adding and removing valid entry works
     Go To  ${SELECT_ENTRY_TYPE_URL}
