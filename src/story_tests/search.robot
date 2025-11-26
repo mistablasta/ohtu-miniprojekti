@@ -1,12 +1,13 @@
 *** Settings ***
 Resource  resource.robot
-Suite Setup      Open And Configure Browser
+Suite Setup      Setup And Reset
 Suite Teardown   Close Browser
 
 *** Test Cases ***
 Searching a valid entry by title works
-    Reset Entries
-    Go To  ${ADD_ENTRY_URL}
+    Go To  ${SELECT_ENTRY_TYPE_URL}
+    Click Element  id=book
+    Click Button  Next
     Input Text  title  Book
     Input Text  year  2000
     Input Text  author  Author
@@ -68,4 +69,3 @@ Deleting a searched entry works
     Click Button  Delete
     Handle Alert  action=ACCEPT
     Page Should Contain  No entries found
-    Reset Entries

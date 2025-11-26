@@ -2,8 +2,6 @@ from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
 from entities.entry import (
     Type,
-    Fields,
-    #Entry,
 )
 from repositories import entry_repository as repository
 #from repositories.todo_repository import set_done #get_todos, #create_todo
@@ -45,37 +43,48 @@ def new():
     #return redirect("/")
 
 
+def get_type_enum(type_str):
+    if type_str == "book":
+        return Type.BOOK
+    if type_str == "article":
+        return Type.ARTICLE
+
+    return Type.MISC
+
 #Entry functions
 @app.route("/new_entry")
 def new_entry():
-    return render_template("add_entry.html")
+    return render_template("select_entry_type.html")
+
+@app.route("/add_entry_form", methods=["GET"])
+def add_entry_form():
+    entry_type = request.args.get("type")
+    return render_template("add_entry.html", entry_type=entry_type)
 
 @app.route("/create_entry", methods=["POST"])
 def create_entry():
-    title = request.form["title"]
-    year = request.form["year"]
-    author = request.form["author"]
-    publisher = request.form["publisher"]
-    field = request.form["field"]
+    entry_type_str = request.form.get("type")
+    entry_type = get_type_enum(entry_type_str)
+
+    fields = {}
+    for key, value in request.form.items():
+        if key != "type":
+            fields[key] = value
 
     # Validate user input
     error = validate_entry(request.form)
 
     # Return the same page with an error message if validation failed
     if error:
-        return render_template("add_entry.html", error=error, form=request.form)
-
-    # Define the fields
-    fields = {
-    Fields.TITLE: title,
-    Fields.YEAR: year,
-    Fields.AUTHOR: author,
-    Fields.PUBLISHER: publisher,
-    "field": field,
-    }
+        return render_template(
+            "add_entry.html",
+            error=error,
+            form=request.form,
+            entry_type=entry_type_str
+        )
 
     # Create the entry
-    repository.create("test", Type.BOOK, fields)
+    repository.create("test", entry_type, fields)
 
     flash("Entry added")
     return redirect("/")
@@ -107,18 +116,14 @@ def edit_entry_form(entry_id):
 
 @app.route("/update_entry/<entry_id>", methods=["POST"])
 def update_entry(entry_id):
-    title = request.form["title"]
-    year = request.form["year"]
-    author = request.form["author"]
-    publisher = request.form["publisher"]
-    field = request.form["field"]
+    entry = repository.get(int(entry_id))
 
-    entry = repository.get(entry_id)
-    entry.set_field(Fields.TITLE, title)
-    entry.set_field(Fields.YEAR, year)
-    entry.set_field(Fields.AUTHOR, author)
-    entry.set_field(Fields.PUBLISHER, publisher)
-    entry.set_field("field", field)
+    fields = {}
+    for key, value in request.form.items():
+        if key != "type":
+            fields[key] = value
+
+    entry.fields = fields
 
     repository.update(entry)
     flash("Entry updated")
