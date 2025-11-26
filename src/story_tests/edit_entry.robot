@@ -6,7 +6,7 @@ Test Setup       Reset Entries
 
 *** Test Cases ***
 User Can Edit An Entry
-    Go To  ${ADD_ENTRY_URl}
+    Go To  ${ADD_ENTRY_URL}
     Input Text  title  Original Book
     Input Text  year  2000
     Input Text  author  Author
@@ -24,7 +24,7 @@ User Can Edit An Entry
     Page Should Not Contain  Original Book
 
 User Can Cancel Editing An Entry
-    Go To  ${ADD_ENTRY_URl}
+    Go To  ${ADD_ENTRY_URL}
     Input Text  title  Original Book
     Input Text  year  2000
     Input Text  author  Author
