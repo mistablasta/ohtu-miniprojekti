@@ -89,14 +89,12 @@ if test_env:
 # delete nappi entrylle
 @app.route("/delete_entry/<entry_id>", methods=["POST"])
 def delete_entrys(entry_id):
-    # TODO VALIDATE
     repository.delete(int(entry_id))
     return redirect("/")
 
 # edit nappi entrylle
 @app.route("/edit_entry/<entry_id>")
 def edit_entry_form(entry_id):
-    # TODO VALIDATE
     entry = repository.get(int(entry_id))
     return render_template("edit_entry.html", entry=entry)
 
@@ -119,9 +117,11 @@ def update_entry(entry_id):
     flash("Entry updated")
     return redirect("/")
 
-# search function
+# search and filter function
 @app.route("/search")
 def search():
     query = request.args.get("query", "")
-    entries = repository.search(query)
-    return render_template("index.html", entries=entries, query=query)
+    filter = request.args.get("filter", "id")
+    entries = repository.search(query, filter)
+    return render_template("index.html", entries=entries, query=query, filter=filter)
+
