@@ -5,28 +5,17 @@ class TestEntryValidation(unittest.TestCase):
     def setUp(self):
         self.base_misc = {
             "type": "misc",
-            "title": "A Valid Title",
-            "year": "2025",
+            "note": "I'm a misc",
         }
 
     def test_valid_misc_entry_returns_none(self):
         error = validate_entry(self.base_misc)
         self.assertIsNone(error)
 
-    def test_missing_title_returns_title_required_error(self):
-        form = {**self.base_misc, "title": "", "type": "book"}
+    def test_missing_note_returns_note_required_error(self):
+        form = {**self.base_misc, "note": None}
         error = validate_entry(form)
-        self.assertEqual(error, "Title is a required field.")
-
-    def test_whitespace_title_returns_title_required_error(self):
-        form = {**self.base_misc, "title": "   ", "type": "book"}
-        error = validate_entry(form)
-        self.assertEqual(error, "Title is a required field.")
-
-    def test_non_numeric_year_returns_year_number_error(self):
-        form = {**self.base_misc, "year": "abc"}
-        error = validate_entry(form)
-        self.assertEqual(error, "Year must be a number.")
+        self.assertEqual(error, "Note is a required field.")
 
     def _valid_book(self):
         return {
@@ -40,6 +29,24 @@ class TestEntryValidation(unittest.TestCase):
     def test_valid_book_returns_none(self):
         error = validate_entry(self._valid_book())
         self.assertIsNone(error)
+
+    def test_book_missing_title_returns_title_required_error(self):
+        form = self._valid_book()
+        form["title"] = ""
+        error = validate_entry(form)
+        self.assertEqual(error, "Title is a required field.")
+
+    def test_book_whitespace_title_returns_title_required_error(self):
+        form = self._valid_book()
+        form["title"] = "   "
+        error = validate_entry(form)
+        self.assertEqual(error, "Title is a required field.")
+
+    def test_book_non_numeric_year_returns_year_number_error(self):
+        form = self._valid_book()
+        form["year"] = "abc"
+        error = validate_entry(form)
+        self.assertEqual(error, "Year must be a number.")
 
     def test_book_missing_author_returns_author_required_error(self):
         form = self._valid_book()
