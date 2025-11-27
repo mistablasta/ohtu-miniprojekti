@@ -12,3 +12,10 @@ CREATE TABLE entry (
   publisher TEXT,
   field TEXT
 );
+
+CREATE TABLE entries (
+    id SERIAL PRIMARY KEY,
+    key TEXT NOT NULL,
+    type TEXT NOT NULL,
+    fields JSONB NOT NULL
+);

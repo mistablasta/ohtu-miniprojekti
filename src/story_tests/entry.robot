@@ -13,11 +13,17 @@ At start there are no entries
 Adding entry redirects to form
     Go To  ${HOME_URL}
     Click Link  Add entry
-    Wait Until Location Contains  ${ADD_ENTRY_URL}
-    Page Should Contain  Add entry
+    Wait Until Location Contains  ${SELECT_ENTRY_TYPE_URL}
+    Page Should Contain  Select Entry Type
+    Click Element  id=book
+    Click Button  Next
+    Wait Until Location Contains  ${ADD_ENTRY_FORM_URL}
+    Page Should Contain  Add Book
 
-Adding valid entry works
-    Go To  ${ADD_ENTRY_URl}
+Adding valid book entry works
+    Go To  ${SELECT_ENTRY_TYPE_URL}
+    Click Element  id=book
+    Click Button  Next
     Input Text  title  Book
     Input Text  year  2000
     Input Text  author  Author
@@ -28,7 +34,9 @@ Adding valid entry works
     Page Should Contain  2000
 
 Adding invalid entry year fails
-    Go To  ${ADD_ENTRY_URl}
+    Go To  ${SELECT_ENTRY_TYPE_URL}
+    Click Element  id=book
+    Click Button  Next
     Input Text  title  Book
     Input Text  year  Book
     Input Text  author  Author
@@ -37,16 +45,20 @@ Adding invalid entry year fails
     Page Should Contain  Year must be a number
 
 Adding invalid entry title fails
-    Go To  ${ADD_ENTRY_URl}
+    Go To  ${SELECT_ENTRY_TYPE_URL}
+    Click Element  id=book
+    Click Button  Next
     Input Text  title  ${SPACE}
     Input Text  year  2000
     Input Text  author  Author
     Input Text  publisher  Publisher
     Click Button  Add entry
-    Page Should Contain  Please input a valid title
+    Page Should Contain  Title is a required field.
 
 Adding and removing valid entry works
-    Go To  ${ADD_ENTRY_URl}
+    Go To  ${SELECT_ENTRY_TYPE_URL}
+    Click Element  id=book
+    Click Button  Next
     Input Text  title  Book
     Input Text  year  2000
     Input Text  author  Author
@@ -54,4 +66,32 @@ Adding and removing valid entry works
     Click Button  Add entry
     Wait Until Location Contains  ${HOME_URL}
     Click Button  Delete
+    Handle Alert  action=ACCEPT
     Page Should Contain  No entries found
+
+Adding valid article entry works
+    Go To  ${SELECT_ENTRY_TYPE_URL}
+    Click Element  id=article
+    Click Button  Next
+    Input Text  title  Article
+    Input Text  year  2021
+    Input Text  author  Writer
+    Input Text  journal  Science Today
+    Click Button  Add entry
+    Wait Until Location Contains  ${HOME_URL}
+    Page Should Contain  Article
+    Page Should Contain  2021
+
+Adding valid misc entry works
+    Go To  ${SELECT_ENTRY_TYPE_URL}
+    Click Element  id=misc
+    Click Button  Next
+    Input Text  title  Miscellaneous Item
+    Input Text  year  2023
+    Input Text  author  Collector
+    Input Text  note  Some random note
+    Input Text  url  http://example.com/misc
+    Click Button  Add entry
+    Wait Until Location Contains  ${HOME_URL}
+    Page Should Contain  Miscellaneous Item
+    Page Should Contain  2023

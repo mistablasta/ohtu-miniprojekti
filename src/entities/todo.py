@@ -1,6 +1,6 @@
 class Todo:
-    def __init__(self, id, content, done):
-        self.id = id
+    def __init__(self, todo_id, content, done):
+        self.id = todo_id
         self.content = content
         self.done = done
 

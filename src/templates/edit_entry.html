@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<h2>Edit Entry</h2>
+
+<form action="/update_entry/{{ entry.id }}" method="post">
+  <input type="hidden" name="type" value="{{ entry.type.name.lower() }}">
+
+  {% if entry.type.name.lower() == 'book' %}
+    <h2>Edit Book</h2>
+    <div>
+      <label>Author:</label>
+      <input type="text" name="author" value="{{ entry.fields.author }}" required>
+    </div>
+    <div>
+      <label>Title:</label>
+      <input type="text" name="title" value="{{ entry.fields.title }}" required>
+    </div>
+    <div>
+      <label>Publisher:</label>
+      <input type="text" name="publisher" value="{{ entry.fields.publisher }}" required>
+    </div>
+    <div>
+      <label>Year:</label>
+      <input type="text" name="year" value="{{ entry.fields.year }}" required>
+    </div>
+    <div>
+      <label>Field:</label>
+      <input type="text" name="field" value="{{ entry.fields.field if entry.fields.field else '' }}">
+    </div>
+  {% elif entry.type.name.lower() == 'article' %}
+    <h2>Edit Article</h2>
+    <div>
+      <label>Author:</label>
+      <input type="text" name="author" value="{{ entry.fields.author }}" required>
+    </div>
+    <div>
+      <label>Title:</label>
+      <input type="text" name="title" value="{{ entry.fields.title }}" required>
+    </div>
+    <div>
+      <label>Journal:</label>
+      <input type="text" name="journal" value="{{ entry.fields.journal }}" required>
+    </div>
+    <div>
+      <label>Year:</label>
+      <input type="text" name="year" value="{{ entry.fields.year }}" required>
+    </div>
+  {% elif entry.type.name.lower() == 'misc' %}
+    <h2>Edit Misc</h2>
+    <div>
+      <label>Author:</label>
+      <input type="text" name="author" value="{{ entry.fields.author if entry.fields.author else '' }}">
+    </div>
+    <div>
+      <label>Title:</label>
+      <input type="text" name="title" value="{{ entry.fields.title if entry.fields.title else '' }}">
+    </div>
+    <div>
+      <label>Year:</label>
+      <input type="text" name="year" value="{{ entry.fields.year if entry.fields.year else '' }}">
+    </div>
+    <div>
+      <label>Note:</label>
+      <input type="text" name="note" value="{{ entry.fields.note if entry.fields.note else '' }}">
+    </div>
+    <div>
+        <label>URL:</label>
+        <input type="text" name="url" value="{{ entry.fields.url if entry.fields.url else '' }}">
+    </div>
+  {% endif %}
+  
+  <button type="submit">Save</button>
+  <a href="/">Cancel</a>
+</form>
+{% endblock %}
