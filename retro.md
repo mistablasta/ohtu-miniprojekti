@@ -50,3 +50,30 @@ Formaatti:
 - Mielellään ei alle eikä yli 6 tuntia työtä
 - Pitää luoda Github Webhook Discordiin
 
+## Sprint 2 Retro
+
+### Start
+
+*Monet commitit muutoksista eikä 1 committi 1000 koodi muutoksen jälkeen
+- committeja vaan rohkeasti, ei riko mitään
+
+*enemmän parikoodaamista
+- toimii hyvin
+- pääsee tuntitavoitteeseen
+- tieto, osaaminen leviää huhujen mukaan
+- haastavat/pullonkaulataskit suunniteltava parikoodattavaksi?
+
+### Stop
+
+*user storyjen taskit vastaavat  hyväksymiskriteerejä
+- huolellinen backlogin tarkastelu
+
+### Continue
+
+*maanantai tapaaminen, ei tarvi olla ehkä 2h
+- hyvä tavata paikan päällä, kaikki enemmän kärryillä
+- mahdollisuutta voi käyttää mm. parikoodaamiseen
+
+*pull requestit
+- toimi hyvin viime sprintissä
+- koodi pysyy helpommin ajan tasalla jos käy reviewmassa toisen pull requestin ennen oman koodin aloittamista
