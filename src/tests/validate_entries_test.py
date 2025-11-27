@@ -14,12 +14,12 @@ class TestEntryValidation(unittest.TestCase):
         self.assertIsNone(error)
 
     def test_missing_title_returns_title_required_error(self):
-        form = {**self.base_misc, "title": ""}
+        form = {**self.base_misc, "title": "", "type": "book"}
         error = validate_entry(form)
         self.assertEqual(error, "Title is a required field.")
 
     def test_whitespace_title_returns_title_required_error(self):
-        form = {**self.base_misc, "title": "   "}
+        form = {**self.base_misc, "title": "   ", "type": "book"}
         error = validate_entry(form)
         self.assertEqual(error, "Title is a required field.")
 
@@ -45,13 +45,13 @@ class TestEntryValidation(unittest.TestCase):
         form = self._valid_book()
         form["author"] = ""
         error = validate_entry(form)
-        self.assertEqual(error, "Author is a required field for books.")
+        self.assertEqual(error, "Author is a required field.")
 
     def test_book_missing_publisher_returns_publisher_required_error(self):
         form = self._valid_book()
         form["publisher"] = ""
         error = validate_entry(form)
-        self.assertEqual(error, "Publisher is a required field for books.")
+        self.assertEqual(error, "Publisher is a required field.")
 
     def _valid_article(self):
         return {
@@ -70,10 +70,10 @@ class TestEntryValidation(unittest.TestCase):
         form = self._valid_article()
         form["author"] = ""
         error = validate_entry(form)
-        self.assertEqual(error, "Author is a required field for articles.")
+        self.assertEqual(error, "Author is a required field.")
 
     def test_article_missing_journal_returns_journal_required_error(self):
         form = self._valid_article()
         form["journal"] = ""
         error = validate_entry(form)
-        self.assertEqual(error, "Journal is a required field for articles.")
+        self.assertEqual(error, "Journal is a required field.")
