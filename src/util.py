@@ -1,3 +1,6 @@
+from entities.entry import type_from_str, Fields
+
+
 class UserInputError(Exception):
     pass
 
@@ -14,36 +17,22 @@ def validate_entry(form) -> str | None:
     Validate that the form submitted by the user for an entry is correct.
     Returns an error if validation failed.
     """
-    entry_type = form.get("type")
+    entry_type_str = form.get("type")
+    entry_type = type_from_str(entry_type_str)
 
-    # Common fields required for all types
-    title = form.get("title")
-    year = form.get("year")
+    if entry_type is None:
+        return "Unknown entry type!"
 
-    if not _is_valid_string(title):
-        return "Title is a required field."
+    entry_type_data = entry_type.get_metadata()
 
-    if not year.isdigit():
+    # Check if all required fields are present
+    for required_field in entry_type_data.required_fields:
+        if required_field not in form or not _is_valid_string(form[required_field]):
+            return required_field.lower().capitalize() + " is a required field."
+
+    # Special field checks
+    if Fields.YEAR in form and not form[Fields.YEAR].isdigit():
         return "Year must be a number."
-
-    # Type specific fields that are required
-    if entry_type == 'book':
-        author = form.get("author")
-        publisher = form.get("publisher")
-        if not _is_valid_string(author):
-            return "Author is a required field for books."
-        if not _is_valid_string(publisher):
-            return "Publisher is a required field for books."
-
-    elif entry_type == 'article':
-        author = form.get("author")
-        journal = form.get("journal")
-        if not _is_valid_string(author):
-            return "Author is a required field for articles."
-        if not _is_valid_string(journal):
-            return "Journal is a required field for articles."
-
-    # misc has no required fields
 
     return None
 
