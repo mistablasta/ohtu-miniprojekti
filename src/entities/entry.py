@@ -59,7 +59,7 @@ class TypeMetadata:
                          Fields.VOLUME]
     )
     MISC = TypeData(
-        required_fields=[],
+        required_fields=[Fields.NOTE],
         optional_fields=[Fields.TITLE,
                          Fields.YEAR,
                          Fields.AUTHOR,
