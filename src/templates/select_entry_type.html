@@ -12,8 +12,10 @@ Select Entry Type
     <form action="/add_entry_form" method="get">
 
         {% for type in types %}
-            <input type="radio" name="type" value="{{ type.name }}" id="{{ type.name }}"  {{ 'checked' if loop.first }}>
-            <label for="{{ type.name }}">{{ type.name.lower().capitalize() }}</label><br>
+            {% set type_id = type.name.lower() %}
+
+            <input type="radio" name="type" value="{{ type_id }}" id="{{ type_id }}"  {{ 'checked' if loop.first }}>
+            <label for="{{ type_id }}">{{ type.name.lower().capitalize() }}</label><br>
         {% endfor %}
 
         <p>
