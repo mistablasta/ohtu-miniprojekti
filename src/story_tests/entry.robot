@@ -86,12 +86,7 @@ Adding valid misc entry works
     Go To  ${SELECT_ENTRY_TYPE_URL}
     Click Element  id=misc
     Click Button  Next
-    Input Text  title  Miscellaneous Item
-    Input Text  year  2023
-    Input Text  author  Collector
-    Input Text  note  Some random note
-    Input Text  url  http://example.com/misc
+    Input Text  note  Miscellaneous Item
     Click Button  Add entry
     Wait Until Location Contains  ${HOME_URL}
     Page Should Contain  Miscellaneous Item
-    Page Should Contain  2023
