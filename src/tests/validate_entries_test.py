@@ -5,17 +5,19 @@ class TestEntryValidation(unittest.TestCase):
     def setUp(self):
         self.base_misc = {
             "type": "misc",
-            "note": "I'm a misc",
+            "title": "A valid misc",
+            "year": "2025",
+            "author": "Author Name"
         }
 
     def test_valid_misc_entry_returns_none(self):
         error = validate_entry(self.base_misc)
         self.assertIsNone(error)
 
-    def test_missing_note_returns_note_required_error(self):
-        form = {**self.base_misc, "note": None}
+    def test_missing_title_returns_title_required_error(self):
+        form = {**self.base_misc, "title": None}
         error = validate_entry(form)
-        self.assertEqual(error, "Note is a required field.")
+        self.assertEqual(error, "Title is a required field.")
 
     def _valid_book(self):
         return {
