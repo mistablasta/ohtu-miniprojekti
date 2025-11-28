@@ -10,15 +10,18 @@ Select Entry Type
 
 <body>
     <form action="/add_entry_form" method="get">
-        <input type="radio" name="type" value="book" id="book" checked>
-        <label for="book">Book</label><br>
-        <input type="radio" name="type" value="article" id="article">
-        <label for="article">Article</label><br>
-        <input type="radio" name="type" value="misc" id="misc">
-        <label for="misc">Misc</label><br>
+
+        {% for type in types %}
+            {% set type_id = type.name.lower() %}
+
+            <input type="radio" name="type" value="{{ type_id }}" id="{{ type_id }}"  {{ 'checked' if loop.first }}>
+            <label for="{{ type_id }}">{{ type.name.lower().capitalize() }}</label><br>
+        {% endfor %}
+
         <p>
             <button type="submit">Next</button>
         </p>
+
     </form>
 </body>
 

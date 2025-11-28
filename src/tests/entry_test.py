@@ -33,3 +33,10 @@ class TestEntry(unittest.TestCase):
         self.assertIn("key=key3", s)
         self.assertIn("type=Type.ARTICLE", s)
         self.assertIn("fields", s)
+
+    def test_all_types_have_metadata_defined(self):
+        for t in Type:
+            try:
+                self.assertIsNotNone(t.get_metadata())
+            except KeyError:
+                self.fail(f"Type {t} did not have metadata defined")

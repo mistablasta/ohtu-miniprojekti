@@ -11,7 +11,6 @@ User Can Edit An Entry
     Input Text  year  2000
     Input Text  author  Author
     Input Text  publisher  Publisher
-    Input Text  field  Computer Science
     Click Button  Add entry
     Wait Until Location Contains  ${HOME_URL}
     Page Should Contain  Original Book
@@ -29,7 +28,6 @@ User Can Cancel Editing An Entry
     Input Text  year  2000
     Input Text  author  Author
     Input Text  publisher  Publisher
-    Input Text  field  Computer Science
     Click Button  Add entry
     Wait Until Location Contains  ${HOME_URL}
     Page Should Contain  Original Book

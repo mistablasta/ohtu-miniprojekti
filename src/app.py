@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
 from entities.entry import (
-    Type,
+    type_from_str, Type,
 )
 from repositories import entry_repository as repository
 #from repositories.todo_repository import set_done #get_todos, #create_todo
@@ -42,29 +42,30 @@ def new():
     #set_done(todo_id)
     #return redirect("/")
 
-
-def get_type_enum(type_str):
-    if type_str == "book":
-        return Type.BOOK
-    if type_str == "article":
-        return Type.ARTICLE
-
-    return Type.MISC
-
 #Entry functions
 @app.route("/new_entry")
 def new_entry():
-    return render_template("select_entry_type.html")
+    return render_template("select_entry_type.html", types=Type)
 
 @app.route("/add_entry_form", methods=["GET"])
 def add_entry_form():
-    entry_type = request.args.get("type")
+    entry_type_str = request.args.get("type")
+    entry_type = type_from_str(entry_type_str)
+
+    # Invalid entry type
+    if entry_type is None:
+        return render_template("select_entry_type.html", types=Type)
+
     return render_template("add_entry.html", entry_type=entry_type)
 
 @app.route("/create_entry", methods=["POST"])
 def create_entry():
     entry_type_str = request.form.get("type")
-    entry_type = get_type_enum(entry_type_str)
+    entry_type = type_from_str(entry_type_str)
+
+    # Invalid entry type
+    if entry_type is None:
+        return render_template("select_entry_type.html", types=Type)
 
     fields = {}
     for key, value in request.form.items():
@@ -80,7 +81,7 @@ def create_entry():
             "add_entry.html",
             error=error,
             form=request.form,
-            entry_type=entry_type_str
+            entry_type=entry_type
         )
 
     # Create the entry
