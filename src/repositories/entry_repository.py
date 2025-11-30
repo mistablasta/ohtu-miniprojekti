@@ -163,16 +163,14 @@ def _parse_entry(result) -> Entry | None:
     if result is None:
         return None
 
-    id = result[0]
-    key = result[1]
-    type = result[2]
+    id, key, type, fields_json, tags_str = result
 
     if isinstance(type, str):
         type_enum = Type[type.upper()]
     else:
         raise ValueError(f"Unknown entry type: {type}")
 
-    fields_json = result[3]
     fields_dict = json.loads(fields_json) if isinstance(fields_json, str) else fields_json
-
-    return Entry(id=id, key=key, type=type_enum, fields=fields_dict)
+    tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()] if tags_str else []
+    
+    return Entry(id=id, key=key, type=type_enum, fields=fields_dict, tags=tags)
