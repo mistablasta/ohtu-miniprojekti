@@ -6,8 +6,12 @@ Select Entry Type
 
 {% block body %}
 
+<div class="top-bar">
+    <h2>Bibliography App</h2>
+</div>
+
 <div class="main-container">
-    <h2>Select Entry Type</h2>
+    <h2 style="margin: 0px; margin-bottom: 10px;">Select Entry Type</h2>
     <form action="/add_entry_form" method="get">
 
         {% for type in types %}
