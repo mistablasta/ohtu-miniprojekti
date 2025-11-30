@@ -6,14 +6,16 @@ Add entry
 
 {% block body %}
 
-<h2>Add entry</h2>
+<div class="top-bar">
+    <h2>Bibliography App</h2>
+</div>
 
 <body>
-    <div>
+    <div class="main-container">
         {% if error %}
         <div class="alert">{{ error }}</div>
         {% endif %}
-
+        <h3>Add entry</h3>
         <form action="/create_entry" method="post">
             <input type="hidden" name="type" value="{{ entry_type.name }}">
 
