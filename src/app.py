@@ -69,9 +69,12 @@ def create_entry():
 
     fields = {}
     for key, value in request.form.items():
-        if key != "type":
+        if key not in ["type", "tags"]:
             fields[key] = value
 
+    tags_str = request.form.get("tags", "")
+    tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()]
+    
     # Validate user input
     error = validate_entry(request.form)
 
@@ -85,7 +88,7 @@ def create_entry():
         )
 
     # Create the entry
-    repository.create("test", entry_type, fields)
+    repository.create("test", entry_type, fields, tags)
 
     flash("Entry added")
     return redirect("/")

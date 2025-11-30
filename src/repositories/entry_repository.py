@@ -6,7 +6,7 @@ from config import db
 from entities.entry import Entry, Type
 
 
-def create(key: str, type: Type, fields: dict):
+def create(key: str, type: Type, fields: dict, tags: list[str] | None = None):
     """
     Create a new entry
     """
@@ -16,14 +16,50 @@ def create(key: str, type: Type, fields: dict):
     sql = text("""
         INSERT INTO entries (key, type, fields)
         VALUES (:key, :type, :fields)
+        Returning id
     """)
-    db.session.execute(sql, {
+    result =db.session.execute(sql, {
         "key": key,
         "type": type.name.lower(),
         "fields": json.dumps(fields)
     })
+    entry_id = result.scalar()
+    
+    if tags:
+        _link_tags_to_entry(entry_id, tags)
+        
     db.session.commit()
 
+def _link_tags_to_entry(entry_id: int, tags: list[str]):
+
+    # Clear tags for the entry
+    sql = text("DELETE FROM entry_tags WHERE entry_id = :entry_id")
+    db.session.execute(sql, {"entry_id": entry_id})
+    
+    # Add new tags
+    for tag_name in tags:
+        tag_name = tag_name.strip()
+        if not tag_name:
+            continue
+        
+        # Find or create tag
+        sql = text("SELECT id FROM tags WHERE name = :name")
+        result = db.session.execute(sql, {"name": tag_name})
+        tag_id = result.scalar()
+        
+        if not tag_id:
+            sql = text("INSERT INTO tags (name) VALUES (:name) RETURNING id")
+            result = db.session.execute(sql, {"name": tag_name})
+            tag_id = result.scalar()
+        
+        # Link tag to entry
+        sql = text("""
+            INSERT INTO entry_tags (entry_id, tag_id)
+            values (:entry_id, :tag_id)
+            ON CONFLICT (entry_id, tag_id) DO NOTHING
+        """)
+        db.session.execute(sql, {"entry_id": entry_id, "tag_id": tag_id})
+        
 def get(id: int) -> Entry:
     """
     Get an entry by its ID
