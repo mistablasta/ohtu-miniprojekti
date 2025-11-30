@@ -17,8 +17,29 @@ body {
     margin: 20px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    /* gap: 16px; */
     align-items: start;
+}
+
+.form-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px
+}
+
+.form-row-container {
+    display: flex;
+    gap: 10px
+}
+
+.form-fields-container > div {
+    display: flex;
+    gap: 5px;
+}
+
+.form-fields-container > div :first-child {
+    width: 100px;
+    text-align: end;
 }
 
 .general-button {

@@ -6,9 +6,8 @@ Select Entry Type
 
 {% block body %}
 
-<h2>Select Entry Type</h2>
-
-<body>
+<div class="main-container">
+    <h2>Select Entry Type</h2>
     <form action="/add_entry_form" method="get">
 
         {% for type in types %}
@@ -23,6 +22,6 @@ Select Entry Type
         </p>
 
     </form>
-</body>
+</div>
 
 {% endblock %}
