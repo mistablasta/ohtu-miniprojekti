@@ -1,31 +1,36 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<h2>Edit Entry</h2>
 
-<form action="/update_entry/{{ entry.id }}" method="post">
-    {% set entry_type = entry.type %}
+<div class="top-bar">
+    <h2>Bibliography App</h2>
+</div>
 
-    <input type="hidden" name="type" value="{{ entry_type.name.lower() }}">
+<div class="main-container">
+    <form action="/update_entry/{{ entry.id }}" method="post">
+        {% set entry_type = entry.type %}
 
-    <h2>Edit {{ entry_type.name.lower() }}</h2>
+        <input type="hidden" name="type" value="{{ entry_type.name.lower() }}">
 
-    {% for field, value in entry.fields.items() %}
-        {% set required = field in entry_type.get_metadata().required_fields %}
+        <h2 style="margin: 0px; margin-bottom: 10px;">Edit {{ entry_type.name.lower() }}</h2>
+        <div class="form-fields-container">
+            {% for field, value in entry.fields.items() %}
+                {% set required = field in entry_type.get_metadata().required_fields %}
 
-        <div>
-            <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
-            <input
-                type="text"
-                name="{{ field }}"
-                value="{{ value }}"
-                {{ "required" if required }}>
+                <div>
+                    <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
+                    <input
+                        type="text"
+                        name="{{ field }}"
+                        value="{{ value }}"
+                        {{ "required" if required }}>
+                </div>
+
+            {% endfor %}
         </div>
+        <button type="submit">Save</button>
+        <a href="/">Cancel</a>
 
-    {% endfor %}
-
-    <button type="submit">Save</button>
-    <a href="/">Cancel</a>
-
-</form>
+    </form>
+</div>
 {% endblock %}
