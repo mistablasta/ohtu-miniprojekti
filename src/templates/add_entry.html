@@ -10,32 +10,31 @@ Add entry
     <h2>Bibliography App</h2>
 </div>
 
-<body>
-    <div class="main-container">
-        {% if error %}
-        <div class="alert">{{ error }}</div>
-        {% endif %}
-        <h3>Add entry</h3>
-        <form action="/create_entry" method="post">
-            <input type="hidden" name="type" value="{{ entry_type.name }}">
+<div class="main-container">
+    {% if error %}
+    <div class="alert">{{ error }}</div>
+    {% endif %}
+    <form action="/create_entry" method="post">
+        <input type="hidden" name="type" value="{{ entry_type.name }}">
 
-            <h2>Add {{ entry_type.name.lower().capitalize() }}</h2>
+        <h2>Add {{ entry_type.name.lower().capitalize() }}</h2>
 
-            {% set metadata = entry_type.get_metadata() %}
-            {% set all_fields = metadata.required_fields + metadata.optional_fields %}
-
+        {% set metadata = entry_type.get_metadata() %}
+        {% set all_fields = metadata.required_fields + metadata.optional_fields %}
+        
+        <div class="form-fields-container">
             {% for field in all_fields %}
-                {% set required = field in metadata.required_fields %}
+            {% set required = field in metadata.required_fields %}
 
-                <div>
-                    <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
-                    <input
-                       type="text"
-                       name="{{ field }}"
-                       value="{{ form[field] if form else '' }}"
-                       {{ "required" if required }}
-                    >
-                </div>
+            <div>
+                <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
+                <input
+                    type="text"
+                    name="{{ field }}"
+                    value="{{ form[field] if form else '' }}"
+                    {{ "required" if required }}
+                >
+            </div>
             {% endfor %}
 
             <div>
@@ -54,8 +53,8 @@ Add entry
             <button type="submit">
                 Add entry
             </button>
-        </form>
-    </div>
-</body>
+        </div>
+    </form>
+</div>
 
 {% endblock %}
