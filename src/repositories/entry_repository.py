@@ -136,16 +136,26 @@ def search(query: str, filter):
         order_sql = "id DESC"
 
     sql = text(f"""
-       SELECT id, key, type, fields
-       FROM entries
-       WHERE EXISTS (
-           SELECT 1
-           FROM jsonb_each_text(fields) AS t(key, value)
-           WHERE value ILIKE :query
-       )
-       OR key ILIKE :query
-       ORDER BY {order_sql}
-   """)
+        SELECT e.id, e.key, e.type, e.fields, COALESCE(string_agg(t.name, ', '), '') as tags
+        FROM entries e
+        LEFT JOIN entry_tags et ON e.id = et.entry_id
+        LEFT JOIN tags t ON et.tag_id = t.id
+        WHERE
+            EXISTS (
+                SELECT 1
+                FROM jsonb_each_text(e.fields) AS f(key, value)
+                WHERE value ILIKE :query
+            )
+            OR e.key ILIKE :query
+            OR e.id IN (
+                SELECT et.entry_id
+                FROM entry_tags et
+                JOIN tags t ON et.tag_id = t.id
+                WHERE t.name ILIKE :query
+            )
+        GROUP BY e.id
+        ORDER BY {order_sql}
+    """)
 
     result = db.session.execute(sql, {"query": f"%{query}%"})
     return _parse_entries(result.fetchall())
