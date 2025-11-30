@@ -65,8 +65,12 @@ def get(id: int) -> Entry:
     Get an entry by its ID
     """
     sql = text("""
-        SELECT id, key, type, fields FROM entries
-        WHERE id = :id
+        SELECT e.id, e.key, e.type, e.fields, COALESCE(string_agg(t.name, ', '), '') AS tags
+        FROM entries e
+        LEFT JOIN entry_tags et ON e.id = et.entry_id
+        LEFT JOIN tags t ON et.tag_id = t.id
+        WHERE e.id = :id
+        GROUP BY e.id
     """)
     result = db.session.execute(sql, {"id": id})
     return _parse_entry(result.fetchone())
@@ -76,7 +80,11 @@ def get_all() -> list[Entry]:
     Get all entries
     """
     sql = text("""
-        SELECT id, key, type, fields FROM entries
+        SELECT e.id, e.key, e.type, e.fields, COALESCE(string_agg(t.name, ', '), '') AS tags
+        FROM entries e
+        LEFT JOIN entry_tags et ON e.id = et.entry_id
+        LEFT JOIN tags t ON et.tag_id = t.id
+        GROUP BY e.id
     """)
     result = db.session.execute(sql)
     return _parse_entries(result.fetchall())
@@ -104,6 +112,9 @@ def update(entry: Entry):
         "type": entry.type.name.lower(),
         "fields": json.dumps(entry.fields)
     })
+    
+    _link_tags_to_entry(entry.id, entry.tags)
+    
     db.session.commit()
 
 def search(query: str, filter):

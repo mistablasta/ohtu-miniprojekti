@@ -124,10 +124,13 @@ def update_entry(entry_id):
 
     fields = {}
     for key, value in request.form.items():
-        if key != "type":
+        if key not in ["type", "tags"]:
             fields[key] = value
 
+    tags_str = request.form.get("tags", "")
+    tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()]
     entry.fields = fields
+    entry.tags = tags
 
     repository.update(entry)
     flash("Entry updated")
