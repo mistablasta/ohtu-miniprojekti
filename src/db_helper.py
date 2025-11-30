@@ -4,9 +4,10 @@ from config import db, app
 
 
 def reset_db():
-    print("Clearing contents from table todos")
-    sql = text("DELETE FROM entries")
-    db.session.execute(sql)
+    print("Clearing contents from tables")
+    db.session.execute(text("DELETE FROM entry_tags"))
+    db.session.execute(text("DELETE FROM tags"))
+    db.session.execute(text("DELETE FROM entries"))
     db.session.commit()
 
 def tables():
@@ -32,7 +33,7 @@ def setup_db():
     if len(tables_in_db) > 0:
         print(f"Tables exist, dropping: {', '.join(tables_in_db)}")
     for table in tables_in_db:
-        sql = text(f"DROP TABLE {table}")
+        sql = text(f"DROP TABLE {table} CASCADE")
         db.session.execute(sql)
     db.session.commit()
 
