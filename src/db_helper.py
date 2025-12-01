@@ -4,7 +4,6 @@ from config import db, app
 
 
 def reset_db():
-    print("Clearing contents from table todos")
     sql = text("DELETE FROM entries")
     db.session.execute(sql)
     db.session.commit()
