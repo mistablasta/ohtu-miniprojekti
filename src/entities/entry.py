@@ -98,9 +98,15 @@ class Entry:
         if not self.has_field(Fields.TITLE):
             return None
         return self.get_field(Fields.TITLE)
-    
+
     def get_tags(self):
         return ", ".join(self.tags)
 
     def __str__(self):
-        return f"id={self.id}, key={self.key}, type={self.type}, fields={self.fields}, tags={self.tags}"
+        return {
+            "id": self.id,
+            "key": self.key,
+            "type": self.type.name,
+            "fields": self.fields,
+            "tags": self.tags
+        }
