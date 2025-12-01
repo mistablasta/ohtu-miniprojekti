@@ -29,9 +29,9 @@ Filter a valid entry by title
     Select From List By Value  name=filter  title_asc
     Click Button  Search
     Wait Until Page Contains  ABook
-    ${t1}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[1]
-    ${t2}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[2]
-    ${t3}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[3]
+    ${t1}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Title:']])[1]
+    ${t2}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Title:']])[2]
+    ${t3}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Title:']])[3]
     Should Contain  ${t1}  ABook
     Should Contain  ${t2}  Book
     Should Contain  ${t3}  CBook
@@ -39,9 +39,9 @@ Filter a valid entry by title
     Select From List By Value  name=filter  title_desc
     Click Button  Search
     Wait Until Page Contains  CBook
-    ${t1}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[1]
-    ${t2}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[2]
-    ${t3}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[3]
+    ${t1}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Title:']])[1]
+    ${t2}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Title:']])[2]
+    ${t3}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Title:']])[3]
     Should Contain  ${t1}  CBook
     Should Contain  ${t2}  Book
     Should Contain  ${t3}  ABook
@@ -50,9 +50,9 @@ Filter a valid entry by title
     Select From List By Value  name=filter  year_asc
     Click Button  Search
     Wait Until Page Contains  2000
-    ${y1}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[1]
-    ${y2}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[2]
-    ${y3}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[3]
+    ${y1}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Year:']])[1]
+    ${y2}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Year:']])[2]
+    ${y3}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Year:']])[3]
     Should Contain  ${y1}  2000
     Should Contain  ${y2}  2001
     Should Contain  ${y3}  2002
@@ -61,9 +61,9 @@ Filter a valid entry by title
     Select From List By Value  name=filter  year_desc
     Click Button  Search
     Wait Until Page Contains  2002
-    ${y1}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[1]
-    ${y2}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[2]
-    ${y3}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[3]
+    ${y1}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Year:']])[1]
+    ${y2}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Year:']])[2]
+    ${y3}=  Get Text  xpath=(//div[@class='entry-card']//[strong[text()='Year:']])[3]
     Should Contain  ${y1}  2002
     Should Contain  ${y2}  2001
     Should Contain  ${y3}  2000

@@ -34,7 +34,7 @@ User Can Cancel Editing An Entry
     Click Button  Edit
     Wait Until Page Contains  Edit Entry
     Input Text  title  Changed Book
-    Click Link  Cancel
+    Click Button  Cancel
     Wait Until Location Contains  ${HOME_URL}
     Page Should Contain  Original Book
     Page Should Not Contain  Changed Book
