@@ -78,11 +78,12 @@ def type_from_str(name: str) -> Type | None:
         return None
 
 class Entry:
-    def __init__(self, id: int, key: str, type: Type, fields: dict):
+    def __init__(self, id: int, key: str, type: Type, fields: dict, tags: list[str] | None=None):
         self.id = id
         self.key = key
         self.type = type
         self.fields = fields
+        self.tags = tags if tags is not None else []
 
     def has_field(self, field_key: str):
         return field_key in self.fields
@@ -98,5 +99,11 @@ class Entry:
             return None
         return self.get_field(Fields.TITLE)
 
+    def get_tags(self):
+        return ", ".join(self.tags)
+
     def __str__(self):
-        return f"id={self.id}, key={self.key}, type={self.type}, fields={self.fields}"
+        return (
+            f"Entry(id={self.id}, key={self.key}, type={self.type}, "
+            f"fields={self.fields}, tags={self.tags})"
+        )

@@ -23,6 +23,19 @@
         </div>
 
     {% endfor %}
+    
+    <div>
+        <label>Tags:</label>
+        <input
+           type="text"
+           name="tags"
+           value="{{ entry.get_tags() }}"
+           placeholder="Tag 1, Tag 2, ..."
+        >
+        {% if all_tags %}
+            <p>Existing tags: {{ all_tags | join(', ') }}</p>
+        {% endif %}
+    </div>
 
     <button type="submit">Save</button>
     <a href="/">Cancel</a>

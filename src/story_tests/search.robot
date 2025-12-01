@@ -69,3 +69,23 @@ Deleting a searched entry works
     Click Button  Delete
     Handle Alert  action=ACCEPT
     Page Should Contain  No entries found
+
+Searching by tags works
+    Go To  ${ADD_ENTRY_FORM_URL}?type=book
+    Input Text  title  Book
+    Input Text  year  2000
+    Input Text  author  Author
+    Input Text  publisher  Publisher
+    Input Text  tags  tag1
+    Click Button  Add entry
+    Go To  ${ADD_ENTRY_FORM_URL}?type=book
+    Input Text  title  Book
+    Input Text  year  2000
+    Input Text  author  Author
+    Input Text  publisher  Publisher
+    Input Text  tags  tag2
+    Click Button  Add entry
+    Input Text  name=query  tag1
+    Click Button  Search
+    Wait Until Page Contains  tag1
+    Page Should Not Contain  tag2

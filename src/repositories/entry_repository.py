@@ -6,7 +6,7 @@ from config import db
 from entities.entry import Entry, Type
 
 
-def create(key: str, type: Type, fields: dict):
+def create(key: str, type: Type, fields: dict, tags: list[str] | None = None):
     """
     Create a new entry
     """
@@ -16,21 +16,61 @@ def create(key: str, type: Type, fields: dict):
     sql = text("""
         INSERT INTO entries (key, type, fields)
         VALUES (:key, :type, :fields)
+        Returning id
     """)
-    db.session.execute(sql, {
+    result =db.session.execute(sql, {
         "key": key,
         "type": type.name.lower(),
         "fields": json.dumps(fields)
     })
+    entry_id = result.scalar()
+
+    if tags:
+        _link_tags_to_entry(entry_id, tags)
+
     db.session.commit()
+
+def _link_tags_to_entry(entry_id: int, tags: list[str]):
+
+    # Clear tags for the entry
+    sql = text("DELETE FROM entry_tags WHERE entry_id = :entry_id")
+    db.session.execute(sql, {"entry_id": entry_id})
+
+    # Add new tags
+    for tag_name in tags:
+        tag_name = tag_name.strip()
+        if not tag_name:
+            continue
+
+        # Find or create tag
+        sql = text("SELECT id FROM tags WHERE name = :name")
+        result = db.session.execute(sql, {"name": tag_name})
+        tag_id = result.scalar()
+
+        if not tag_id:
+            sql = text("INSERT INTO tags (name) VALUES (:name) RETURNING id")
+            result = db.session.execute(sql, {"name": tag_name})
+            tag_id = result.scalar()
+
+        # Link tag to entry
+        sql = text("""
+            INSERT INTO entry_tags (entry_id, tag_id)
+            values (:entry_id, :tag_id)
+            ON CONFLICT (entry_id, tag_id) DO NOTHING
+        """)
+        db.session.execute(sql, {"entry_id": entry_id, "tag_id": tag_id})
 
 def get(id: int) -> Entry:
     """
     Get an entry by its ID
     """
     sql = text("""
-        SELECT id, key, type, fields FROM entries
-        WHERE id = :id
+        SELECT e.id, e.key, e.type, e.fields, COALESCE(string_agg(t.name, ', '), '') AS tags
+        FROM entries e
+        LEFT JOIN entry_tags et ON e.id = et.entry_id
+        LEFT JOIN tags t ON et.tag_id = t.id
+        WHERE e.id = :id
+        GROUP BY e.id
     """)
     result = db.session.execute(sql, {"id": id})
     return _parse_entry(result.fetchone())
@@ -40,7 +80,11 @@ def get_all() -> list[Entry]:
     Get all entries
     """
     sql = text("""
-        SELECT id, key, type, fields FROM entries
+        SELECT e.id, e.key, e.type, e.fields, COALESCE(string_agg(t.name, ', '), '') AS tags
+        FROM entries e
+        LEFT JOIN entry_tags et ON e.id = et.entry_id
+        LEFT JOIN tags t ON et.tag_id = t.id
+        GROUP BY e.id
     """)
     result = db.session.execute(sql)
     return _parse_entries(result.fetchall())
@@ -68,6 +112,9 @@ def update(entry: Entry):
         "type": entry.type.name.lower(),
         "fields": json.dumps(entry.fields)
     })
+
+    _link_tags_to_entry(entry.id, entry.tags)
+
     db.session.commit()
 
 def search(query: str, filter):
@@ -89,19 +136,37 @@ def search(query: str, filter):
         order_sql = "id DESC"
 
     sql = text(f"""
-       SELECT id, key, type, fields
-       FROM entries
-       WHERE EXISTS (
-           SELECT 1
-           FROM jsonb_each_text(fields) AS t(key, value)
-           WHERE value ILIKE :query
-       )
-       OR key ILIKE :query
-       ORDER BY {order_sql}
-   """)
+        SELECT e.id, e.key, e.type, e.fields, COALESCE(string_agg(t.name, ', '), '') as tags
+        FROM entries e
+        LEFT JOIN entry_tags et ON e.id = et.entry_id
+        LEFT JOIN tags t ON et.tag_id = t.id
+        WHERE
+            EXISTS (
+                SELECT 1
+                FROM jsonb_each_text(e.fields) AS f(key, value)
+                WHERE value ILIKE :query
+            )
+            OR e.key ILIKE :query
+            OR e.id IN (
+                SELECT et.entry_id
+                FROM entry_tags et
+                JOIN tags t ON et.tag_id = t.id
+                WHERE t.name ILIKE :query
+            )
+        GROUP BY e.id
+        ORDER BY {order_sql}
+    """)
 
     result = db.session.execute(sql, {"query": f"%{query}%"})
     return _parse_entries(result.fetchall())
+
+def get_all_tags() -> list[str]:
+    """
+    Return all tag names sorted alphabetically.
+    """
+    sql = text("SELECT name FROM tags ORDER BY name")
+    result = db.session.execute(sql)
+    return [row[0] for row in result.fetchall()]
 
 def _parse_entries(result) -> list[Entry]:
     """
@@ -116,16 +181,14 @@ def _parse_entry(result) -> Entry | None:
     if result is None:
         return None
 
-    id = result[0]
-    key = result[1]
-    type = result[2]
+    id, key, type, fields_json, tags_str = result
 
     if isinstance(type, str):
         type_enum = Type[type.upper()]
     else:
         raise ValueError(f"Unknown entry type: {type}")
 
-    fields_json = result[3]
     fields_dict = json.loads(fields_json) if isinstance(fields_json, str) else fields_json
+    tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()] if tags_str else []
 
-    return Entry(id=id, key=key, type=type_enum, fields=fields_dict)
+    return Entry(id=id, key=key, type=type_enum, fields=fields_dict, tags=tags)

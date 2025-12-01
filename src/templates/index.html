@@ -43,6 +43,10 @@ Bibliography App
       {% endif %}
     {% endfor %}
 
+    {% if entry.tags %}
+      <p><strong>Tags:</strong> {{ entry.get_tags() }}</p>
+    {% endif %}
+
     <!-- Edit and Delete buttons -->
     <div style="margin-top: 10px;">
       <a href="/edit_entry/{{ entry.id }}">

@@ -36,6 +36,19 @@ Add entry
                 </div>
             {% endfor %}
 
+            <div>
+                <label>Tags:</label>
+                <input
+                   type="text"
+                   name="tags"
+                   value="{{ form['tags'] if form else '' }}"
+                   placeholder="Tag 1, Tag 2, ..."
+                >
+                {% if all_tags %}
+                    <p>Existing tags: {{ all_tags | join(', ') }}</p>
+                {% endif %}
+            </div>
+
             <button type="submit">
                 Add entry
             </button>
