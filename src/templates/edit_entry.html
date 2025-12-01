@@ -7,31 +7,33 @@
 </div>
 
 <div class="main-container">
-    <form action="/update_entry/{{ entry.id }}" method="post">
-        {% set entry_type = entry.type %}
+    <div class="menu-container">
+        <form action="/update_entry/{{ entry.id }}" method="post">
+            {% set entry_type = entry.type %}
 
-        <input type="hidden" name="type" value="{{ entry_type.name.lower() }}">
+            <input type="hidden" name="type" value="{{ entry_type.name.lower() }}">
 
-        <h2 style="margin: 0px; margin-bottom: 10px;">Edit {{ entry_type.name.lower() }}</h2>
-        <div class="form-fields-container">
-            {% for field, value in entry.fields.items() %}
-                {% set required = field in entry_type.get_metadata().required_fields %}
+            <h2 style="margin: 0px; margin-bottom: 10px;">Edit {{ entry_type.name.lower() }}</h2>
+            <div class="form-fields-container">
+                {% for field, value in entry.fields.items() %}
+                    {% set required = field in entry_type.get_metadata().required_fields %}
 
-                <div>
-                    <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
-                    <input
-                        type="text"
-                        name="{{ field }}"
-                        value="{{ value }}"
-                        {{ "required" if required }}>
-                </div>
+                    <div>
+                        <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
+                        <input
+                            type="text"
+                            name="{{ field }}"
+                            value="{{ value }}"
+                            {{ "required" if required }}>
+                    </div>
 
-            {% endfor %}
-        </div>
-        <button type="submit" style="margin-top: 10px;">Save</button>
-        <a href="/" style="text-decoration: none;">
-            <button type="button">Cancel</button> 
-        </a>
-    </form>
+                {% endfor %}
+            </div>
+            <button type="submit" style="margin-top: 10px;">Save</button>
+            <a href="/" style="text-decoration: none;">
+                <button type="button">Cancel</button> 
+            </a>
+        </form>
+    </div>
 </div>
 {% endblock %}

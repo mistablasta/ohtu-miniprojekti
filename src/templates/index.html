@@ -34,22 +34,24 @@ Bibliography App
     <a href="/new_entry" class="button general-button">Add entry</a>
   </div>
 
-<!-- Näyttäää entryt -->
-<div class="main-entry-container">
-  <div class="entries-container">
-    {% for entry in entries %}
-    <div class="entry-card">
-      {% for key, value in entry.fields.items() %}
-        {% if value and key != 'id' %}
-          <div class="entry-content">
+  <!-- Näyttäää entryt -->
+  <div class="main-entry-container">
+    <div class="entries-container">
+      {% for entry in entries %}
+      <div class="entry-card">
+        {% for key, value in entry.fields.items() %}
+          {% if value and key != 'id' %}
+            <div class="entry-content">
               <strong>{{ key|capitalize }}:</strong> {{ value }}
             </div>
+          {% endif %}
+        {% endfor %}
+        
+        {% if entry.tags %}
+        <div class="entry-content">
+          <strong>Tags:</strong> {{ entry.get_tags() }}
+        </div>
         {% endif %}
-      {% endfor %}
-
-      {% if entry.tags %}
-        <p><strong>Tags:</strong> {{ entry.get_tags() }}</p>
-      {% endif %}
 
         <!-- Edit and Delete buttons -->
         <div style="margin-top: 10px;">
