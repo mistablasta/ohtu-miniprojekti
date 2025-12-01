@@ -103,10 +103,7 @@ class Entry:
         return ", ".join(self.tags)
 
     def __str__(self):
-        return {
-            "id": self.id,
-            "key": self.key,
-            "type": self.type.name,
-            "fields": self.fields,
-            "tags": self.tags
-        }
+        return (
+            f"Entry(id={self.id}, key={self.key}, type={self.type}, "
+            f"fields={self.fields}, tags={self.tags})"
+        )
