@@ -41,7 +41,9 @@ Bibliography App
       <div class="entry-card">
         {% for key, value in entry.fields.items() %}
           {% if value and key != 'id' %}
-            <p><strong>{{ key|capitalize }}:</strong> {{ value }}</p>
+            <div class="entry-content">
+              <strong>{{ key|capitalize }}:</strong> {{ value }}
+            </div>
           {% endif %}
         {% endfor %}
 
