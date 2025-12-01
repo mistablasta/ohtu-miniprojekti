@@ -51,17 +51,20 @@ def new_entry():
 def add_entry_form():
     entry_type_str = request.args.get("type")
     entry_type = type_from_str(entry_type_str)
+    all_tags = repository.get_all_tags()
 
     # Invalid entry type
     if entry_type is None:
         return render_template("select_entry_type.html", types=Type)
 
-    return render_template("add_entry.html", entry_type=entry_type)
+    return render_template("add_entry.html", entry_type=entry_type, all_tags=all_tags)
 
 @app.route("/create_entry", methods=["POST"])
 def create_entry():
     entry_type_str = request.form.get("type")
     entry_type = type_from_str(entry_type_str)
+
+    all_tags = repository.get_all_tags()
 
     # Invalid entry type
     if entry_type is None:
@@ -72,8 +75,10 @@ def create_entry():
         if key not in ["type", "tags"]:
             fields[key] = value
 
+    existing_tags = request.form.getlist("existing_tags")
     tags_str = request.form.get("tags", "")
-    tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()]
+    new_tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()]
+    tags = list(set(existing_tags + new_tags))
 
     # Validate user input
     error = validate_entry(request.form)
@@ -84,7 +89,8 @@ def create_entry():
             "add_entry.html",
             error=error,
             form=request.form,
-            entry_type=entry_type
+            entry_type=entry_type,
+            all_tags=all_tags
         )
 
     # Create the entry
@@ -114,7 +120,8 @@ def delete_entrys(entry_id):
 def edit_entry_form(entry_id):
     try:
         entry = repository.get(int(entry_id))
-        return render_template("edit_entry.html", entry=entry)
+        all_tags = repository.get_all_tags()
+        return render_template("edit_entry.html", entry=entry, all_tags=all_tags)
     except ValueError:
         return redirect("/")
 
@@ -127,8 +134,10 @@ def update_entry(entry_id):
         if key not in ["type", "tags"]:
             fields[key] = value
 
+    existing_tags = request.form.getlist("existing_tags")
     tags_str = request.form.get("tags", "")
-    tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()]
+    new_tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()]
+    tags = list(set(existing_tags + new_tags))
     entry.fields = fields
     entry.tags = tags
 
