@@ -4,9 +4,8 @@ from entities.entry import (
     type_from_str, Type,
 )
 from repositories import entry_repository as repository
-#from repositories.todo_repository import set_done #get_todos, #create_todo
 from config import app, test_env
-from util import validate_entry #, validate_todo
+from util import validate_entry
 
 
 @app.route("/")
@@ -20,27 +19,6 @@ def get_all_entries():
     entries = repository.get_all()
     entries_json = [entry.__dict__ for entry in entries]
     return jsonify(entries_json)
-
-@app.route("/new_todo")
-def new():
-    return render_template("new_todo.html")
-
-#@app.route("/create_todo", methods=["POST"])
-#def todo_creation():
-    #content = request.form.get("content")
-
-    #try:
-        #validate_todo(content)
-        #create_todo(content)
-        #return redirect("/")
-    #except Exception as error:
-        #flash(str(error))
-        #return  redirect("/new_todo")
-
-#@app.route("/toggle_todo/<todo_id>", methods=["POST"])
-#def toggle_todo(todo_id):
-    #set_done(todo_id)
-    #return redirect("/")
 
 #Entry functions
 @app.route("/new_entry")
