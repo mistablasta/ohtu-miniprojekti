@@ -18,7 +18,7 @@ Add entry
         <form action="/create_entry" method="post">
             <input type="hidden" name="type" value="{{ entry_type.name }}">
 
-            <h2 style="margin: 0px; margin-bottom: 10px;">Add {{ entry_type.name.lower().capitalize() }}</h2>
+            <h3 style="margin: 0px; margin-bottom: 10px;">Add {{ entry_type.name.lower().capitalize() }}</h3>
 
             {% set metadata = entry_type.get_metadata() %}
             {% set all_fields = metadata.required_fields + metadata.optional_fields %}
