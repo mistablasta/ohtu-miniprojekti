@@ -160,6 +160,14 @@ def search(query: str, filter):
     result = db.session.execute(sql, {"query": f"%{query}%"})
     return _parse_entries(result.fetchall())
 
+def get_all_tags() -> list[str]:
+    """
+    Return all tag names sorted alphabetically.
+    """
+    sql = text("SELECT name FROM tags ORDER BY name")
+    result = db.session.execute(sql)
+    return [row[0] for row in result.fetchall()]
+
 def _parse_entries(result) -> list[Entry]:
     """
     Parse multiple entries at once from a result
