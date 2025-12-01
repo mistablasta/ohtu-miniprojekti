@@ -280,6 +280,9 @@ exclude-too-few-public-methods=.*Entity$
 # R0901)
 ignored-parents=
 
+# Maximum number of positional arguments for function / method. Chamged to 6 from 5
+max-positional-arguments=6
+
 # Maximum number of arguments for function / method. Chamged to 7 from 5
 max-args=7
 
