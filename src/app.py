@@ -74,7 +74,7 @@ def create_entry():
 
     tags_str = request.form.get("tags", "")
     tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()]
-    
+
     # Validate user input
     error = validate_entry(request.form)
 

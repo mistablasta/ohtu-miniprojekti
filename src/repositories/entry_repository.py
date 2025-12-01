@@ -24,10 +24,10 @@ def create(key: str, type: Type, fields: dict, tags: list[str] | None = None):
         "fields": json.dumps(fields)
     })
     entry_id = result.scalar()
-    
+
     if tags:
         _link_tags_to_entry(entry_id, tags)
-        
+
     db.session.commit()
 
 def _link_tags_to_entry(entry_id: int, tags: list[str]):
@@ -35,23 +35,23 @@ def _link_tags_to_entry(entry_id: int, tags: list[str]):
     # Clear tags for the entry
     sql = text("DELETE FROM entry_tags WHERE entry_id = :entry_id")
     db.session.execute(sql, {"entry_id": entry_id})
-    
+
     # Add new tags
     for tag_name in tags:
         tag_name = tag_name.strip()
         if not tag_name:
             continue
-        
+
         # Find or create tag
         sql = text("SELECT id FROM tags WHERE name = :name")
         result = db.session.execute(sql, {"name": tag_name})
         tag_id = result.scalar()
-        
+
         if not tag_id:
             sql = text("INSERT INTO tags (name) VALUES (:name) RETURNING id")
             result = db.session.execute(sql, {"name": tag_name})
             tag_id = result.scalar()
-        
+
         # Link tag to entry
         sql = text("""
             INSERT INTO entry_tags (entry_id, tag_id)
@@ -59,7 +59,7 @@ def _link_tags_to_entry(entry_id: int, tags: list[str]):
             ON CONFLICT (entry_id, tag_id) DO NOTHING
         """)
         db.session.execute(sql, {"entry_id": entry_id, "tag_id": tag_id})
-        
+
 def get(id: int) -> Entry:
     """
     Get an entry by its ID
@@ -112,9 +112,9 @@ def update(entry: Entry):
         "type": entry.type.name.lower(),
         "fields": json.dumps(entry.fields)
     })
-    
+
     _link_tags_to_entry(entry.id, entry.tags)
-    
+
     db.session.commit()
 
 def search(query: str, filter):
@@ -182,5 +182,5 @@ def _parse_entry(result) -> Entry | None:
 
     fields_dict = json.loads(fields_json) if isinstance(fields_json, str) else fields_json
     tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()] if tags_str else []
-    
+
     return Entry(id=id, key=key, type=type_enum, fields=fields_dict, tags=tags)
