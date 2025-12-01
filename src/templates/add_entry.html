@@ -11,37 +11,39 @@ Add entry
 </div>
 
 <div class="main-container">
-    {% if error %}
-    <div class="alert">{{ error }}</div>
-    {% endif %}
-    <form action="/create_entry" method="post">
-        <input type="hidden" name="type" value="{{ entry_type.name }}">
+    <div class="menu-container">
+        {% if error %}
+        <div class="alert">{{ error }}</div>
+        {% endif %}
+        <form action="/create_entry" method="post">
+            <input type="hidden" name="type" value="{{ entry_type.name }}">
 
-        <h2 style="margin: 0px; margin-bottom: 10px;">Add {{ entry_type.name.lower().capitalize() }}</h2>
+            <h2 style="margin: 0px; margin-bottom: 10px;">Add {{ entry_type.name.lower().capitalize() }}</h2>
 
-        {% set metadata = entry_type.get_metadata() %}
-        {% set all_fields = metadata.required_fields + metadata.optional_fields %}
-        
-        <div class="form-fields-container">
-        {% for field in all_fields %}
-            {% set required = field in metadata.required_fields %}
+            {% set metadata = entry_type.get_metadata() %}
+            {% set all_fields = metadata.required_fields + metadata.optional_fields %}
+            
+            <div class="form-fields-container">
+            {% for field in all_fields %}
+                {% set required = field in metadata.required_fields %}
 
-            <div>
-                <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
-                <input
-                    type="text"
-                    name="{{ field }}"
-                    value="{{ form[field] if form else '' }}"
-                    {{ "required" if required }}
-                >
+                <div>
+                    <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
+                    <input
+                        type="text"
+                        name="{{ field }}"
+                        value="{{ form[field] if form else '' }}"
+                        {{ "required" if required }}
+                    >
+                </div>
+            {% endfor %}
             </div>
-        {% endfor %}
-        </div>
 
-        <button type="submit" style="margin-top: 10px;">
-            Add entry
-        </button>
-    </form>
+            <button type="submit" style="margin-top: 10px;">
+                Add entry
+            </button>
+        </form>
+    </div>
 </div>
 
 {% endblock %}

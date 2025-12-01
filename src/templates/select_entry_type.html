@@ -11,21 +11,23 @@ Select Entry Type
 </div>
 
 <div class="main-container">
-    <h2 style="margin: 0px; margin-bottom: 10px;">Select Entry Type</h2>
-    <form action="/add_entry_form" method="get">
+    <div class="menu-container">
+        <h2 style="margin: 0px; margin-bottom: 10px;">Select Entry Type</h2>
+        <form action="/add_entry_form" method="get">
 
-        {% for type in types %}
-            {% set type_id = type.name.lower() %}
+            {% for type in types %}
+                {% set type_id = type.name.lower() %}
 
-            <input type="radio" name="type" value="{{ type_id }}" id="{{ type_id }}"  {{ 'checked' if loop.first }}>
-            <label for="{{ type_id }}">{{ type.name.lower().capitalize() }}</label><br>
-        {% endfor %}
+                <input type="radio" name="type" value="{{ type_id }}" id="{{ type_id }}"  {{ 'checked' if loop.first }}>
+                <label for="{{ type_id }}">{{ type.name.lower().capitalize() }}</label><br>
+            {% endfor %}
 
-        <p>
-            <button type="submit">Next</button>
-        </p>
+            <p>
+                <button type="submit">Next</button>
+            </p>
 
-    </form>
+        </form>
+    </div>
 </div>
 
 {% endblock %}
