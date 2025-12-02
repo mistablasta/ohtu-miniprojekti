@@ -143,10 +143,6 @@ def search():
     entries = repository.search(query, filter)
     return render_template("index.html", entries=entries, query=query, filter=filter)
 
-@app.route("/doi2bib")
-def test_doi():
-    return dictionary_to_entry("https://doi.org/10.1126/science.aar3646")
-
 def doi_to_dictionary(doi: str):
     try:
         if doi.startswith("http"):
