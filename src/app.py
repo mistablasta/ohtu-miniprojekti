@@ -28,6 +28,7 @@ def new_entry():
 
 @app.route("/add_entry_form", methods=["GET"])
 def add_entry_form():
+    doi = request.args.get("doi")
     entry_type_str = request.args.get("type")
     entry_type = type_from_str(entry_type_str)
     all_tags = repository.get_all_tags()
@@ -36,6 +37,14 @@ def add_entry_form():
     if entry_type is None:
         return render_template("select_entry_type.html", types=Type)
 
+    if doi:
+        try:
+            entryid = dictionary_to_entry(doi)
+        except ValueError as e:
+            flash(str(e))
+            return redirect("/new_entry")
+        return redirect(f"/edit_entry/{entryid}")
+    
     return render_template("add_entry.html", entry_type=entry_type, all_tags=all_tags)
 
 @app.route("/create_entry", methods=["POST"])
@@ -142,6 +151,7 @@ def doi_to_dictionary(doi: str):
             url = doi
         else:
             url = f"https://doi.org/{doi}"
+
         headers = {"Accept": "text/bibliography; style=bibtex"}  
         r = requests.get(url, headers = headers, timeout=10)  
         r.encoding = "utf-8"  
@@ -149,6 +159,9 @@ def doi_to_dictionary(doi: str):
 
         parser = bibtexparser.loads(bib) 
         bibdict = parser.entries 
+
+        if not bibdict:
+            return {"error": f"No BibTeX entry found for DOI {doi}"}
 
         res = {} 
         for dic in bibdict: 
@@ -162,6 +175,9 @@ def doi_to_dictionary(doi: str):
 
 def dictionary_to_entry(doi: str):
     bib = doi_to_dictionary(doi)
+
+    if "error" in bib:
+        raise ValueError(bib["error"])
 
     bib_type = bib.get("ENTRYTYPE", "").lower()
     if bib_type == "article":
@@ -197,4 +213,5 @@ def dictionary_to_entry(doi: str):
         if bib_key in bib and field_enum in allowed_fields
     }
 
-    repository.create(key, etype, fields)
+    entryid = repository.create(key, etype, fields)
+    return entryid

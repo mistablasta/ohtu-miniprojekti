@@ -8,8 +8,23 @@ Select Entry Type
 
 <h2>Select Entry Type</h2>
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <p style="color: red; font-weight: bold;">
+      {{ messages[-1] }}
+    </p>
+  {% endif %}
+{% endwith %}
+
+
+
 <body>
     <form action="/add_entry_form" method="get">
+
+        <p>
+            <label for="doi">Fill from DOI:</label><br>
+            <input type="text" name="doi" id="doi" placeholder="DOI Number or URL">
+        </p>
 
         {% for type in types %}
             {% set type_id = type.name.lower() %}
