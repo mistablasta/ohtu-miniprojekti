@@ -37,14 +37,16 @@ def add_entry_form():
     if entry_type is None:
         return render_template("select_entry_type.html", types=Type)
 
+    error = None
+
     if doi:
         try:
             entryid = dictionary_to_entry(doi)
+            return redirect(f"/edit_entry/{entryid}")
         except ValueError as e:
-            flash(str(e))
-            return redirect("/new_entry")
-        return redirect(f"/edit_entry/{entryid}")
-    
+            error = str(e)
+            return render_template("select_entry_type.html", types=Type, error=error)
+        
     return render_template("add_entry.html", entry_type=entry_type, all_tags=all_tags)
 
 @app.route("/create_entry", methods=["POST"])
