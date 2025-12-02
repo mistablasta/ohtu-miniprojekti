@@ -1,11 +1,11 @@
 from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
-from entities.entry import (
-    type_from_str, Type,
-)
+from entities.entry import type_from_str, Type, Fields
 from repositories import entry_repository as repository
 from config import app, test_env
 from util import validate_entry
+import requests
+import bibtexparser
 
 
 @app.route("/")
@@ -130,3 +130,64 @@ def search():
     filter = request.args.get("filter", "id")
     entries = repository.search(query, filter)
     return render_template("index.html", entries=entries, query=query, filter=filter)
+
+def doi_to_dictionary(doi: str): 
+    if doi[0] != "h": 
+        url = f"https://doi.org/{doi}" 
+    else: 
+        url = doi 
+    headers = {"Accept": "text/bibliography; style=bibtex"}  
+    r = requests.get(url, headers = headers)  
+    r.encoding = "utf-8"  
+    bib = r.text
+
+    parser = bibtexparser.loads(bib) 
+    bibdict = parser.entries 
+
+    res = {} 
+    for dic in bibdict: 
+        res.update(dic) 
+    return res 
+
+def dictionary_to_entry(doi: str):
+    bib = doi_to_dictionary(doi)
+
+    bib_type = bib.get("ENTRYTYPE", "").lower()
+    if bib_type == "article":
+        etype = Type.ARTICLE
+    elif bib_type == "book":
+        etype = Type.BOOK
+    else:
+        etype = Type.MISC
+    
+    key = bib.get("ID", bib.get("doi", "unknown"))
+
+    bib_to_fields = {
+        "title": Fields.TITLE,
+        "year": Fields.YEAR,
+        "author": Fields.AUTHOR,
+        "publisher": Fields.PUBLISHER,
+        "journal": Fields.JOURNAL,
+        "edition": Fields.EDITION,
+        "month": Fields.MONTH,
+        "note": Fields.NOTE,
+        "number": Fields.NUMBER,
+        "volume": Fields.VOLUME,
+        "series": Fields.SERIES,
+        "howpublished": Fields.HOWPUBLISHED,
+    }
+
+    metadata = etype.get_metadata()
+    allowed_fields = metadata.get_required_fields() + metadata.get_optional_fields()
+
+    fields = {
+        field_enum: bib[bib_key]
+        for bib_key, field_enum in bib_to_fields.items()
+        if bib_key in bib and field_enum in allowed_fields
+    }
+
+    repository.create(key, etype, fields)
+
+@app.route("/test-doi")
+def test_doi():
+    return dictionary_to_entry("https://doi.org/10.1126/science.aar3646")
