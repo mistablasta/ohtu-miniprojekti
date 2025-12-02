@@ -5,6 +5,7 @@ from repositories import entry_repository as repository
 from config import app, test_env
 from util import validate_entry
 import requests
+from requests.exceptions import RequestException
 import bibtexparser
 
 
@@ -131,23 +132,33 @@ def search():
     entries = repository.search(query, filter)
     return render_template("index.html", entries=entries, query=query, filter=filter)
 
+@app.route("/doi2bib")
+def test_doi():
+    return dictionary_to_entry("https://doi.org/10.1126/science.aar3646")
+
 def doi_to_dictionary(doi: str): 
-    if doi[0] != "h": 
-        url = f"https://doi.org/{doi}" 
-    else: 
-        url = doi 
-    headers = {"Accept": "text/bibliography; style=bibtex"}  
-    r = requests.get(url, headers = headers)  
-    r.encoding = "utf-8"  
-    bib = r.text
+    try:
+        if doi.startswith("http"):
+            url = doi
+        else:
+            url = f"https://doi.org/{doi}"
+        headers = {"Accept": "text/bibliography; style=bibtex"}  
+        r = requests.get(url, headers = headers, timeout=10)  
+        r.encoding = "utf-8"  
+        bib = r.text
 
-    parser = bibtexparser.loads(bib) 
-    bibdict = parser.entries 
+        parser = bibtexparser.loads(bib) 
+        bibdict = parser.entries 
 
-    res = {} 
-    for dic in bibdict: 
-        res.update(dic) 
-    return res 
+        res = {} 
+        for dic in bibdict: 
+            res.update(dic) 
+        return res 
+    
+    except RequestException as e:
+        return {"error": f"Failed to fetch DOI '{doi}': {str(e)}"}
+    except Exception as e:
+        return {"error": f"Failed to parse DOI '{doi}': {str(e)}"}
 
 def dictionary_to_entry(doi: str):
     bib = doi_to_dictionary(doi)
@@ -187,7 +198,3 @@ def dictionary_to_entry(doi: str):
     }
 
     repository.create(key, etype, fields)
-
-@app.route("/test-doi")
-def test_doi():
-    return dictionary_to_entry("https://doi.org/10.1126/science.aar3646")
