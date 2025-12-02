@@ -1,12 +1,12 @@
+import requests
+from requests.exceptions import RequestException
+import bibtexparser
 from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
 from entities.entry import type_from_str, Type, Fields
 from repositories import entry_repository as repository
 from config import app, test_env
 from util import validate_entry
-import requests
-from requests.exceptions import RequestException
-import bibtexparser
 
 
 @app.route("/")
@@ -46,7 +46,7 @@ def add_entry_form():
         except ValueError as e:
             error = str(e)
             return render_template("select_entry_type.html", types=Type, error=error)
-        
+
     return render_template("add_entry.html", entry_type=entry_type, all_tags=all_tags)
 
 @app.route("/create_entry", methods=["POST"])
@@ -147,32 +147,32 @@ def search():
 def test_doi():
     return dictionary_to_entry("https://doi.org/10.1126/science.aar3646")
 
-def doi_to_dictionary(doi: str): 
+def doi_to_dictionary(doi: str):
     try:
         if doi.startswith("http"):
             url = doi
         else:
             url = f"https://doi.org/{doi}"
 
-        headers = {"Accept": "text/bibliography; style=bibtex"}  
-        r = requests.get(url, headers = headers, timeout=10)  
-        r.encoding = "utf-8"  
+        headers = {"Accept": "text/bibliography; style=bibtex"}
+        r = requests.get(url, headers = headers, timeout=10)
+        r.encoding = "utf-8"
         bib = r.text
 
-        parser = bibtexparser.loads(bib) 
-        bibdict = parser.entries 
+        parser = bibtexparser.loads(bib)
+        bibdict = parser.entries
 
         if not bibdict:
             return {"error": f"No BibTeX entry found for DOI {doi}"}
 
-        res = {} 
-        for dic in bibdict: 
-            res.update(dic) 
-        return res 
-    
+        res = {}
+        for dic in bibdict:
+            res.update(dic)
+        return res
+
     except RequestException as e:
         return {"error": f"Failed to fetch DOI '{doi}': {str(e)}"}
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return {"error": f"Failed to parse DOI '{doi}': {str(e)}"}
 
 def dictionary_to_entry(doi: str):
@@ -188,7 +188,7 @@ def dictionary_to_entry(doi: str):
         etype = Type.BOOK
     else:
         etype = Type.MISC
-    
+
     key = bib.get("ID", bib.get("doi", "unknown"))
 
     bib_to_fields = {
