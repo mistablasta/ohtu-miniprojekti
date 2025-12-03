@@ -68,26 +68,7 @@ Sort by Title Ascending
     ${t1}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[1]
     ${t2}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[2]
     ${t3}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[3]
-    Select From List By Value  name=filter  title_asc
-    Click Button  Search
-    Wait Until Page Contains  ABook
-    ${t1}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Title:']])[1]
-    ${t2}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Title:']])[2]
-    ${t3}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Title:']])[3]
-    Should Contain  ${t1}  ABook
-    Should Contain  ${t2}  Book
-    Should Contain  ${t3}  CBook
 
-    Select From List By Value  name=filter  title_desc
-    Click Button  Search
-    Wait Until Page Contains  CBook
-    ${t1}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Title:']])[1]
-    ${t2}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Title:']])[2]
-    ${t3}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Title:']])[3]
-    Should Contain  ${t1}  CBook
-    Should Contain  ${t2}  Book
-    Should Contain  ${t3}  ABook
-    
     Should Contain  ${t1}  A Book
     Should Contain  ${t2}  B Book
     Should Contain  ${t3}  C Book
@@ -113,23 +94,5 @@ Sort by Year Descending
     Should Contain  ${y1}  2020
     Should Contain  ${y2}  1950
     Should Contain  ${y3}  1900
-    Select From List By Value  name=filter  year_asc
-    Click Button  Search
-    Wait Until Page Contains  2000
-    ${y1}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Year:']])[1]
-    ${y2}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Year:']])[2]
-    ${y3}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Year:']])[3]
-    Should Contain  ${y1}  2000
-    Should Contain  ${y2}  2001
-    Should Contain  ${y3}  2002
-    
 
-    Select From List By Value  name=filter  year_desc
-    Click Button  Search
-    Wait Until Page Contains  2002
-    ${y1}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Year:']])[1]
-    ${y2}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Year:']])[2]
-    ${y3}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Year:']])[3]
-    Should Contain  ${y1}  2002
-    Should Contain  ${y2}  2001
-    Should Contain  ${y3}  2000
+
