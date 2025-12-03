@@ -6,10 +6,8 @@ Bibliography App
 
 {% block body %}
 
-<h2>Bibliography App</h2>
-
-<div>
-  <a href="/new_entry">Add entry</a>
+<div class="top-bar">
+  <h2>Bibliography App</h2>
 </div>
 
 <!-- Search and Filter Section -->
@@ -115,34 +113,63 @@ Bibliography App
   {% endif %}
 
 </div>
+<!-- Search ominaisuus -->
+<div class="main-container" style="gap: 16px">
+  <form action="/search" method="get">
+    <input
+      type="text"
+      name="query"
+      placeholder="Search entries..."
+      value="{{ query | default('') }}"
+    >
+    <label for="filter">filter:</label>
+    <select name="filter">
+      <option value="id" {% if filter=="id" %}selected{% endif %}>default</option>
+      <option value="title_asc" {% if filter=="title_asc" %}selected{% endif %}>title (A-Z)</option>
+      <option value="title_desc" {% if filter=="title_desc" %}selected{% endif %}>title (Z-A)</option>
+      <option value="year_asc" {% if filter=="year_asc" %}selected{% endif %}>year (asc)</option>
+      <option value="year_desc" {% if filter=="year_desc" %}selected{% endif %}>year (desc)</option>
+    </select>
+    <button type="submit">Search</button>
+  </form>
 
-<!-- Näyttäää entryt -->
-<div class="entries-container">
-  {% for entry in entries %}
-  <div class="entry-card">
-    {% for key, value in entry.fields.items() %}
-      {% if value and key != 'id' %}
-        <p><strong>{{ key|capitalize }}:</strong> {{ value }}</p>
-      {% endif %}
-    {% endfor %}
+  <div style="align-self: start;">
+    <a href="/new_entry" class="button general-button">Add entry</a>
+  </div>
 
-    {% if entry.tags %}
-      <p><strong>Tags:</strong> {{ entry.get_tags() }}</p>
-    {% endif %}
+  <!-- Näyttäää entryt -->
+  <div class="main-entry-container">
+    <div class="entries-container">
+      {% for entry in entries %}
+      <div class="entry-card">
+        {% for key, value in entry.fields.items() %}
+          {% if value and key != 'id' %}
+            <div class="entry-content">
+              <strong>{{ key|capitalize }}:</strong> {{ value }}
+            </div>
+          {% endif %}
+        {% endfor %}
+        
+        {% if entry.tags %}
+        <div class="entry-content">
+          <strong>Tags:</strong> {{ entry.get_tags() }}
+        </div>
+        {% endif %}
 
-    <!-- Edit and Delete buttons -->
-    <div style="margin-top: 10px;">
-      <a href="/edit_entry/{{ entry.id }}">
-        <button type="button">Edit</button>
-      </a>
-      <form action="/delete_entry/{{ entry.id }}" method="post" style="display: inline;">
-        <button type="submit" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</button>
-      </form>
+        <!-- Edit and Delete buttons -->
+        <div style="margin-top: 10px;">
+          <a href="/edit_entry/{{ entry.id }}" style="text-decoration: none;">
+            <button type="button">Edit</button>
+          </a>
+          <form action="/delete_entry/{{ entry.id }}" method="post" style="display: inline;">
+            <button type="submit" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+        <h4>No entries found</h4>
+      {% endfor %}
     </div>
   </div>
-  {% else %}
-    <p>No entries found</p>
-  {% endfor %}
 </div>
-
 {% endblock %}

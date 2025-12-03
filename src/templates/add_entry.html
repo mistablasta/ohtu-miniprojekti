@@ -6,54 +6,57 @@ Add entry
 
 {% block body %}
 
-<h2>Add entry</h2>
+<div class="top-bar">
+    <h2>Bibliography App</h2>
+</div>
 
-<body>
-    <div>
+<div class="main-container">
+    <h2>Add Entry</h2>
+    <div class="menu-container">
         {% if error %}
         <div class="alert">{{ error }}</div>
         {% endif %}
-
         <form action="/create_entry" method="post">
             <input type="hidden" name="type" value="{{ entry_type.name }}">
 
-            <h2>Add {{ entry_type.name.lower().capitalize() }}</h2>
+            <h3 style="margin: 0px; margin-bottom: 10px;">Add {{ entry_type.name.lower().capitalize() }}</h3>
 
             {% set metadata = entry_type.get_metadata() %}
             {% set all_fields = metadata.required_fields + metadata.optional_fields %}
-
-            {% for field in all_fields %}
+            
+            <div class="form-fields-container">
+                {% for field in all_fields %}
                 {% set required = field in metadata.required_fields %}
 
                 <div>
                     <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
                     <input
-                       type="text"
-                       name="{{ field }}"
-                       value="{{ form[field] if form else '' }}"
-                       {{ "required" if required }}
+                        type="text"
+                        name="{{ field }}"
+                        value="{{ form[field] if form else '' }}"
+                        {{ "required" if required }}
                     >
                 </div>
-            {% endfor %}
+                {% endfor %}
 
-            <div>
-                <label>Tags:</label>
-                <input
-                   type="text"
-                   name="tags"
-                   value="{{ form['tags'] if form else '' }}"
-                   placeholder="Tag 1, Tag 2, ..."
-                >
+                <div>
+                    <label>Tags:</label>
+                    <input
+                    type="text"
+                    name="tags"
+                    value="{{ form['tags'] if form else '' }}"
+                    placeholder="Tag 1, Tag 2, ..."
+                    >
+                </div>
                 {% if all_tags %}
-                    <p>Existing tags: {{ all_tags | join(', ') }}</p>
+                <p>Existing tags: {{ all_tags | join(', ') }}</p>
                 {% endif %}
             </div>
-
-            <button type="submit">
+            <button type="submit" style="margin-top: 10px;">
                 Add entry
             </button>
         </form>
     </div>
-</body>
+</div>
 
 {% endblock %}

@@ -1,15 +1,121 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: #73956f;
     margin: 0;
+}
+
+.top-bar {
+    background-color: #454851;
     padding: 20px;
+    width: 100%;
+    height: 40px;
+    color: white;
+    bottom: 0;
+}
+
+.main-container {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    /* gap: 16px; */
+    align-items: start;
+}
+
+.menu-container {
+    background: #b2c6b3;
+    border: solid 1px #454851;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.form-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px
+}
+
+.form-row-container {
+    display: flex;
+    gap: 10px
+}
+
+.form-fields-container > div {
+    display: flex;
+    gap: 5px;
+}
+
+.form-fields-container > div :first-child {
+    width: 100px;
+    text-align: end;
+}
+
+.general-button {
+    display: block;
+    background: #ffffff;
+    color: black;
+    /* border: 2px solid #29d66b; */
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;   
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.general-button:hover{
+    background: #29d66b;
+    transition: background-color 0.25s ease-out;
+}
+
+.general-button:active{
+    transform: translateY(1.5px);
+}
+
+.site__submit {
+    display: flex;
+    flex-direction: row;
+    background: white;
+    width: 70%;
+    height: 20%;
+    border: #454851;
+    padding: 10px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    flex-grow: 2;
+    border: none;
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+.search-button {
+    background: #95D7AE;
+    border: #95D7AE;
+    width: 30%;
+    height: 100%;
+    color: black;
+    cursor: pointer;
+    position: absolute;
+    right: 0%;
+    top: 0%;
+}
+
+.search-button:hover {
+    background: #29d66b;
+    transition: background-color 0.25 ease-out;
 }
 
 .entries-container {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    justify-content: flex-start;
+    justify-content: space-evenly;
 }
 
 .entry-card {
@@ -20,6 +126,9 @@ body {
     width: 200px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     transition: transform 0.2s, box-shadow 0.2s;
+    /* justify-content: space-evenly;
+    display: flex;
+    flex-direction: column; */
 }
 
 .entry-card:hover {
@@ -29,6 +138,13 @@ body {
 
 .entry-card p {
     margin: 5px 0;
+}
+
+.entry-content{
+    margin: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .alert {
