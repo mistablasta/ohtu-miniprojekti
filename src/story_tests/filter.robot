@@ -62,6 +62,8 @@ Sort by Title Ascending
     
     Select From List By Value  name=sort  title_asc
     Click Button  Search with Filters
+
+    Wait Until Element Is Visible  xpath=//div[@class='entry-card']
     
     ${t1}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[1]
     ${t2}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[2]
@@ -101,6 +103,8 @@ Sort by Year Descending
     
     Select From List By Value  name=sort  year_desc
     Click Button  Search with Filters
+    
+    Wait Until Element Is Visible  xpath=//div[@class='entry-card']
     
     ${y1}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[1]
     ${y2}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[2]
