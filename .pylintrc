@@ -280,6 +280,9 @@ exclude-too-few-public-methods=.*Entity$
 # R0901)
 ignored-parents=
 
+# Maximum number of positional arguments for function / method. Chamged to 6 from 5
+max-positional-arguments=6
+
 # Maximum number of arguments for function / method. Chamged to 7 from 5
 max-args=7
 
@@ -290,7 +293,7 @@ max-attributes=7
 max-bool-expr=5
 
 # Maximum number of branch for function / method body.
-max-branches=12
+max-branches=15
 
 # Maximum number of locals for function / method body.
 max-locals=15

@@ -1,12 +1,8 @@
-class UserInputError(Exception):
-    pass
-
-def validate_todo(content):
-    if len(content) < 5:
-        raise UserInputError("Todo content length must be greater than 4")
-
-    if len(content) > 100:
-        raise UserInputError("Todo content length must be smaller than 100")
+import requests
+from requests.exceptions import RequestException
+import bibtexparser
+from entities.entry import type_from_str, Fields, Type
+from repositories import entry_repository as repository
 
 # pylint: disable=too-many-return-statements
 def validate_entry(form) -> str | None:
@@ -14,36 +10,22 @@ def validate_entry(form) -> str | None:
     Validate that the form submitted by the user for an entry is correct.
     Returns an error if validation failed.
     """
-    entry_type = form.get("type")
+    entry_type_str = form.get("type")
+    entry_type = type_from_str(entry_type_str)
 
-    # Common fields required for all types
-    title = form.get("title")
-    year = form.get("year")
+    if entry_type is None:
+        return "Unknown entry type!"
 
-    if not _is_valid_string(title):
-        return "Title is a required field."
+    entry_type_data = entry_type.get_metadata()
 
-    if not year.isdigit():
+    # Check if all required fields are present
+    for required_field in entry_type_data.required_fields:
+        if required_field not in form or not _is_valid_string(form[required_field]):
+            return required_field.lower().capitalize() + " is a required field."
+
+    # Special field checks
+    if Fields.YEAR in form and not form[Fields.YEAR].isdigit():
         return "Year must be a number."
-
-    # Type specific fields that are required
-    if entry_type == 'book':
-        author = form.get("author")
-        publisher = form.get("publisher")
-        if not _is_valid_string(author):
-            return "Author is a required field for books."
-        if not _is_valid_string(publisher):
-            return "Publisher is a required field for books."
-
-    elif entry_type == 'article':
-        author = form.get("author")
-        journal = form.get("journal")
-        if not _is_valid_string(author):
-            return "Author is a required field for articles."
-        if not _is_valid_string(journal):
-            return "Journal is a required field for articles."
-
-    # misc has no required fields
 
     return None
 
@@ -52,3 +34,74 @@ def _is_valid_string(value):
     Returns true if the given string is non-empty. Accounts for whitespace strings.
     """
     return value is not None and len(value) > 0 and not str.isspace(value)
+
+def doi_to_dictionary(doi: str):
+    try:
+        if doi.startswith("http"):
+            url = doi
+        else:
+            url = f"https://doi.org/{doi}"
+
+        headers = {"Accept": "text/bibliography; style=bibtex"}
+        r = requests.get(url, headers = headers, timeout=10)
+        r.encoding = "utf-8"
+        bib = r.text
+
+        parser = bibtexparser.loads(bib)
+        bibdict = parser.entries
+
+        if not bibdict:
+            return {"error": f"No BibTeX entry found for DOI {doi}"}
+
+        res = {}
+        for dic in bibdict:
+            res.update(dic)
+        return res
+
+    except RequestException as e:
+        return {"error": f"Failed to fetch DOI '{doi}': {str(e)}"}
+    except (ValueError, TypeError) as e:
+        return {"error": f"Failed to parse DOI '{doi}': {str(e)}"}
+
+def dictionary_to_entry(doi: str):
+    bib = doi_to_dictionary(doi)
+
+    if "error" in bib:
+        raise ValueError(bib["error"])
+
+    bib_type = bib.get("ENTRYTYPE", "").lower()
+    if bib_type == "article":
+        etype = Type.ARTICLE
+    elif bib_type == "book":
+        etype = Type.BOOK
+    else:
+        etype = Type.MISC
+
+    key = bib.get("ID", bib.get("doi", "unknown"))
+
+    bib_to_fields = {
+        "title": Fields.TITLE,
+        "year": Fields.YEAR,
+        "author": Fields.AUTHOR,
+        "publisher": Fields.PUBLISHER,
+        "journal": Fields.JOURNAL,
+        "edition": Fields.EDITION,
+        "month": Fields.MONTH,
+        "note": Fields.NOTE,
+        "number": Fields.NUMBER,
+        "volume": Fields.VOLUME,
+        "series": Fields.SERIES,
+        "howpublished": Fields.HOWPUBLISHED,
+    }
+
+    metadata = etype.get_metadata()
+    allowed_fields = metadata.get_required_fields() + metadata.get_optional_fields()
+
+    fields = {
+        field_enum: bib[bib_key]
+        for bib_key, field_enum in bib_to_fields.items()
+        if bib_key in bib and field_enum in allowed_fields
+    }
+
+    entryid = repository.create(key, etype, fields)
+    return entryid

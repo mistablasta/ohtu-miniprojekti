@@ -1,91 +1,62 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Todo app
+Add entry
 {% endblock %}
 
 {% block body %}
 
-<h2>Add entry</h2>
+<div class="top-bar">
+    <h2>Bibliography App</h2>
+</div>
 
-<body>
-    <div>
+<div class="main-container">
+    <h2>Add Entry</h2>
+    <div class="menu-container">
         {% if error %}
         <div class="alert">{{ error }}</div>
         {% endif %}
-
         <form action="/create_entry" method="post">
-            <input type="hidden" name="type" value="{{ entry_type }}">
+            <input type="hidden" name="type" value="{{ entry_type.name }}">
 
-            {% if entry_type == 'book' %}
-                <h2>Add Book</h2>
-                <p>
-                    Title
-                    <input type="text" name="title" required value="{{ form.title if form else '' }}"/>
-                </p>
-                <p>
-                    Year
-                    <input type="text" name="year" required value="{{ form.year if form else '' }}"/>
-                </p>
-                    <p>
-                    Author
-                    <input type="text" name="author" required value="{{ form.author if form else '' }}"/>
-                </p>
-                <p>
-                    Publisher
-                    <input type="text" name="publisher" required value="{{ form.publisher if form else '' }}"/>
-                </p>
-                <p>
-                    Field
-                    <input type="text" name="field" value="{{ form.field if form else '' }}"/>
-                </p>
-            {% elif entry_type == 'article' %}
-                <h2>Add Article</h2>
-                <p>
-                    Title
-                    <input type="text" name="title" required value="{{ form.title if form else '' }}"/>
-                </p>
-                <p>
-                    Year
-                    <input type="text" name="year" required value="{{ form.year if form else '' }}"/>
-                </p>
-                <p>
-                    Author
-                    <input type="text" name="author" required value="{{ form.author if form else '' }}"/>
-                </p>
-                <p>
-                    Journal
-                    <input type="text" name="journal" required value="{{ form.journal if form else '' }}"/>
-                </p>
-            {% elif entry_type == 'misc' %}
-                <h2>Add Misc</h2>
-                <p>
-                    Title
-                    <input type="text" name="title" required value="{{ form.title if form else '' }}"/>
-                </p>
-                <p>
-                    Year
-                    <input type="text" name="year" required value="{{ form.year if form else '' }}"/>
-                </p>
-                <p>
-                    Author
-                    <input type="text" name="author" value="{{ form.author if form else '' }}"/>
-                </p>
-                <p>
-                    Note
-                    <input type="text" name="note" value="{{ form.note if form else '' }}"/>
-                </p>
-                <p>
-                    URL
-                    <input type="text" name="url" value="{{ form.url if form else '' }}"/>
-                </p>
-            {% endif %}
+            <h3 style="margin: 0px; margin-bottom: 10px;">Add {{ entry_type.name.lower().capitalize() }}</h3>
+
+            {% set metadata = entry_type.get_metadata() %}
+            {% set all_fields = metadata.required_fields + metadata.optional_fields %}
             
-            <button type="submit">
+            <div class="form-fields-container">
+                {% for field in all_fields %}
+                {% set required = field in metadata.required_fields %}
+
+                <div>
+                    <label>{{ field.lower().capitalize() }}{{ '*' if required }}:</label>
+                    <input
+                        type="text"
+                        name="{{ field }}"
+                        value="{{ form[field] if form else '' }}"
+                        {{ "required" if required }}
+                    >
+                </div>
+                {% endfor %}
+
+                <div>
+                    <label>Tags:</label>
+                    <input
+                    type="text"
+                    name="tags"
+                    value="{{ form['tags'] if form else '' }}"
+                    placeholder="Tag 1, Tag 2, ..."
+                    >
+                </div>
+                {% if all_tags %}
+                <p>Existing tags: {{ all_tags | join(', ') }}</p>
+                {% endif %}
+            </div>
+            <button type="submit" style="margin-top: 10px;">
                 Add entry
             </button>
         </form>
     </div>
-</body>
+</div>
 
 {% endblock %}

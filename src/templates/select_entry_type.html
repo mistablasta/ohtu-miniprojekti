@@ -6,20 +6,41 @@ Select Entry Type
 
 {% block body %}
 
-<h2>Select Entry Type</h2>
+<div class="top-bar">
+    <h2>Bibliography App</h2>
+</div>
 
-<body>
-    <form action="/add_entry_form" method="get">
-        <input type="radio" name="type" value="book" id="book" checked>
-        <label for="book">Book</label><br>
-        <input type="radio" name="type" value="article" id="article">
-        <label for="article">Article</label><br>
-        <input type="radio" name="type" value="misc" id="misc">
-        <label for="misc">Misc</label><br>
-        <p>
-            <button type="submit">Next</button>
-        </p>
-    </form>
-</body>
+<div class="main-container">
+    <h2>Select Entry Type</h2>
+
+    {% if error %}
+      <p style="color: red; font-weight: bold;">
+        {{ error }}
+      </p>
+    {% endif %}
+
+    <div class="menu-container">
+        <h3 style="margin: 0px; margin-bottom: 10px;">Select Entry Type</h3>
+        <form action="/add_entry_form" method="get">
+
+            <p>
+                <label for="doi">Fill from DOI:</label><br>
+                <input type="text" name="doi" id="doi" placeholder="DOI Number or URL">
+            </p>
+
+            {% for type in types %}
+                {% set type_id = type.name.lower() %}
+
+                <input type="radio" name="type" value="{{ type_id }}" id="{{ type_id }}"  {{ 'checked' if loop.first }}>
+                <label for="{{ type_id }}">{{ type.name.lower().capitalize() }}</label><br>
+            {% endfor %}
+
+            <button type="submit" style="margin-top: 10px;">
+                Next
+            </button>
+
+        </form>
+    </div>
+</div>
 
 {% endblock %}
