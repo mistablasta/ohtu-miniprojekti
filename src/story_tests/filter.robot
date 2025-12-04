@@ -65,9 +65,9 @@ Sort by Title Ascending
 
     Wait Until Element Is Visible  xpath=//div[@class='entry-card']
     
-    ${t1}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[1]
-    ${t2}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[2]
-    ${t3}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Title:']])[3]
+    ${t1}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Title:']])[1]
+    ${t2}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Title:']])[2]
+    ${t3}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Title:']])[3]
 
     Should Contain  ${t1}  A Book
     Should Contain  ${t2}  B Book
@@ -87,9 +87,9 @@ Sort by Year Descending
     
     Wait Until Element Is Visible  xpath=//div[@class='entry-card']
     
-    ${y1}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[1]
-    ${y2}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[2]
-    ${y3}=  Get Text  xpath=(//div[@class='entry-card']//p[strong[text()='Year:']])[3]
+    ${y1}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Year:']])[1]
+    ${y2}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Year:']])[2]
+    ${y3}=  Get Text  xpath=(//div[@class='entry-card']//div[@class='entry-content'][strong[text()='Year:']])[3]
     
     Should Contain  ${y1}  2020
     Should Contain  ${y2}  1950
