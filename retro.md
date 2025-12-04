@@ -77,3 +77,19 @@ Formaatti:
 *pull requestit
 - toimi hyvin viime sprintissä
 - koodi pysyy helpommin ajan tasalla jos käy reviewmassa toisen pull requestin ennen oman koodin aloittamista
+
+## Sprint 3 Retro
+
+### Start
+*Parin-kolmen tunnin tapaaminen ennen viimeistä demoa
+- 9.00 torstaina A111 tapaaminen
+- Main branch toiminta kuntoon ennen torstaita neljännen sprintin arviointi kriteerien mukaisesti
+- Demossa ei mitään ylimääräistä mikä ei toimi esitetään vain toimivat osat
+
+### Stop
+*Ei mitään
+
+### Continue
+*Kommunikointi on arvokas
+- Enemmän selkeää kommunikointia ja tilanteen päivittämistä niin jokainen pysyy perillä siitä missä mennään.
+
