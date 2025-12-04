@@ -39,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Install pytest
-        run: pip install pytest pytest-cov
+        run: poetry install pytest pytest-cov
       - name: Run Pylint
         run: poetry run pylint src     
       - name: Run unit tests
