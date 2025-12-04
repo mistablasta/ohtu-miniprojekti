@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/mistablasta/ohtu-miniprojekti/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/mistablasta/ohtu-miniprojekti/actions/workflows/ci.yaml)  |   [Backlog](https://docs.google.com/spreadsheets/d/1Wal9lf7m1hLwKvrNIfiCST6wdOhEhACKW7qlMtfY_5g/edit?usp=sharing)
 
+[![codecov](https://codecov.io/gh/mistablasta/ohtu-miniprojekti/graph/badge.svg?token=DQCI5HRZ87)](https://codecov.io/gh/mistablasta/ohtu-miniprojekti)
+
 ## Definition of Done
 These are the requirements for each feature branch before merging into the **main** branch.
 
