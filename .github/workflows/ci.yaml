@@ -53,7 +53,7 @@ jobs:
       - name: Run robot tests
         run: bash run_robot_tests.sh
       - name: Generate coerage report
-        run: pytest --cov --cov-branch --cov-report=xml
+        run: poetry run pytest --cov --cov-branch --cov-report=xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
