@@ -12,9 +12,21 @@ Select Entry Type
 
 <div class="main-container">
     <h2>Select Entry Type</h2>
+
+    {% if error %}
+      <p style="color: red; font-weight: bold;">
+        {{ error }}
+      </p>
+    {% endif %}
+
     <div class="menu-container">
         <h3 style="margin: 0px; margin-bottom: 10px;">Select Entry Type</h3>
         <form action="/add_entry_form" method="get">
+
+            <p>
+                <label for="doi">Fill from DOI:</label><br>
+                <input type="text" name="doi" id="doi" placeholder="DOI Number or URL">
+            </p>
 
             {% for type in types %}
                 {% set type_id = type.name.lower() %}

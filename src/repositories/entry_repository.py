@@ -29,6 +29,7 @@ def create(key: str, type: Type, fields: dict, tags: list[str] | None = None):
         _link_tags_to_entry(entry_id, tags)
 
     db.session.commit()
+    return entry_id # for DOI autofill edit page fetching
 
 def _link_tags_to_entry(entry_id: int, tags: list[str]):
 

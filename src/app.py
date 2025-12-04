@@ -5,7 +5,7 @@ from entities.entry import (
 )
 from repositories import entry_repository as repository
 from config import app, test_env
-from util import validate_entry
+from util import validate_entry, dictionary_to_entry
 
 
 @app.route("/")
@@ -27,6 +27,7 @@ def new_entry():
 
 @app.route("/add_entry_form", methods=["GET"])
 def add_entry_form():
+    doi = request.args.get("doi")
     entry_type_str = request.args.get("type")
     entry_type = type_from_str(entry_type_str)
     all_tags = repository.get_all_tags()
@@ -34,6 +35,16 @@ def add_entry_form():
     # Invalid entry type
     if entry_type is None:
         return render_template("select_entry_type.html", types=Type)
+
+    error = None
+
+    if doi:
+        try:
+            entryid = dictionary_to_entry(doi)
+            return redirect(f"/edit_entry/{entryid}")
+        except ValueError as e:
+            error = str(e)
+            return render_template("select_entry_type.html", types=Type, error=error)
 
     return render_template("add_entry.html", entry_type=entry_type, all_tags=all_tags)
 
