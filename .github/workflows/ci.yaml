@@ -36,10 +36,10 @@ jobs:
           python-version: '3.12'
       - name: Install Poetry
         run: pip install poetry
+      - name: Install pytest
+        run: poetry add pytest pytest-cov
       - name: Install dependencies
         run: poetry install
-      - name: Install pytest
-        run: poetry install pytest pytest-cov
       - name: Run Pylint
         run: poetry run pylint src     
       - name: Run unit tests
