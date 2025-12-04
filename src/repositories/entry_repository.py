@@ -118,25 +118,13 @@ def update(entry: Entry):
 
     db.session.commit()
 
-def search(query: str, filter):
+def search(query: str):
     """
     Search all entries matching the given string query.
     This method will look for values in the fields or the entry key matching the query string.
     """
-    if filter == "title_asc":
-        order_sql = "fields->>'title' ASC"
-    elif filter == "title_desc":
-        order_sql = "fields->>'title' DESC"
-    elif filter == "year_asc":
-        order_sql = "fields->>'year' ASC"
-    elif filter == "year_desc":
-        order_sql = "fields->>'year' DESC"
-    elif filter == "id":
-        order_sql = "id DESC"
-    else:
-        order_sql = "id DESC"
 
-    sql = text(f"""
+    sql = text("""
         SELECT e.id, e.key, e.type, e.fields, COALESCE(string_agg(t.name, ', '), '') as tags
         FROM entries e
         LEFT JOIN entry_tags et ON e.id = et.entry_id
@@ -155,11 +143,101 @@ def search(query: str, filter):
                 WHERE t.name ILIKE :query
             )
         GROUP BY e.id
-        ORDER BY {order_sql}
     """)
 
     result = db.session.execute(sql, {"query": f"%{query}%"})
     return _parse_entries(result.fetchall())
+
+def search_filter(query: str = "",
+                  sort: str = "",
+                  year_min: int | None = None,
+                  year_max: int | None = None,
+                  entry_type: str = "",
+                  tags: list[str] | None = None) -> list:
+
+    if tags is None:
+        tags = []
+
+    sql = """
+        SELECT e.id, e.key, e.type, e.fields, COALESCE(string_agg(t.name, ', ') , '') AS tags
+        FROM entries e
+        LEFT JOIN entry_tags et ON e.id = et.entry_id
+        LEFT JOIN tags t ON et.tag_id = t.id
+        WHERE 1=1
+    """
+
+    params = {}
+
+    if query:
+        sql += """
+            AND (
+                EXISTS (
+                    SELECT 1
+                    FROM jsonb_each_text(e.fields) AS f(key, value)
+                    WHERE value ILIKE :query
+                )
+                OR e.key ILIKE :query
+                OR e.id IN (
+                    SELECT et.entry_id
+                    FROM entry_tags et
+                    JOIN tags t ON et.tag_id = t.id
+                    WHERE t.name ILIKE :query
+                )
+            )
+        """
+
+        params["query"] = f"%{query}%"
+
+    # TYPE filter
+    if entry_type:
+        sql += " AND e.type = :entry_type "
+        params["entry_type"] = entry_type.lower()
+
+    # YEAR MIN filter
+    if year_min:
+        sql += " AND (e.fields->>'year')::int >= :year_min "
+        params["year_min"] = year_min
+
+    # YEAR MAX FILTER
+    if year_max:
+        sql += " AND (e.fields->>'year')::int <= :year_max "
+        params["year_max"] = year_max
+
+    # TAGS FILTER
+    if tags:
+        tags_cleaned = [tag.strip() for tag in tags if tag.strip()]
+        if tags_cleaned:
+            sql += """
+                AND e.id IN (
+                    SELECT et.entry_id
+                    FROM entry_tags et
+                    JOIN tags t ON et.tag_id = t.id
+                    WHERE t.name = ANY(:tags_array)
+                )
+            """
+            params["tags_array"] = tags_cleaned
+
+    sql += " GROUP BY e.id "
+
+    if sort:
+        if sort == "title_asc":
+            order_sql = "fields->>'title' ASC"
+        elif sort == "title_desc":
+            order_sql = "fields->>'title' DESC"
+        elif sort == "year_asc":
+            order_sql = "fields->>'year' ASC"
+        elif sort == "year_desc":
+            order_sql = "fields->>'year' DESC"
+        elif sort == "id":
+            order_sql = "id DESC"
+        else:
+            order_sql = "id DESC"
+
+        sql += f" ORDER BY {order_sql}"
+
+    result = db.session.execute(text(sql), params)
+    rows = result.fetchall()
+    return _parse_entries(rows)
 
 def get_all_tags() -> list[str]:
     """
