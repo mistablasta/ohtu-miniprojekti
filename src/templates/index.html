@@ -10,26 +10,110 @@ Bibliography App
   <h2>Bibliography App</h2>
 </div>
 
-<!-- Search ominaisuus -->
-<div class="main-container" style="gap: 16px">
-  <form action="/search" method="get">
-    <input
-      type="text"
-      name="query"
-      placeholder="Search entries..."
-      value="{{ query | default('') }}"
-    >
-    <label for="filter">filter:</label>
-    <select name="filter">
-      <option value="id" {% if filter=="id" %}selected{% endif %}>default</option>
-      <option value="title_asc" {% if filter=="title_asc" %}selected{% endif %}>title (A-Z)</option>
-      <option value="title_desc" {% if filter=="title_desc" %}selected{% endif %}>title (Z-A)</option>
-      <option value="year_asc" {% if filter=="year_asc" %}selected{% endif %}>year (asc)</option>
-      <option value="year_desc" {% if filter=="year_desc" %}selected{% endif %}>year (desc)</option>
-    </select>
-    <button type="submit">Search</button>
-  </form>
+<!-- Search and Filter Section -->
+<div style="margin: 20px 0;">
 
+  {% if not filter %}
+    <form action="/search" method="get" style="display: inline-block;">
+      <input
+        type="text"
+        name="query"
+        placeholder="Search entries..."
+        value="{{ query | default('') }}"
+      >
+      <button type="submit">Search</button>
+    </form>
+
+    <form action="/search" method="get" style="display: inline-block; margin-left: 10px;">
+      <input type="hidden" name="query" value="{{ query }}">
+      <input type="hidden" name="filter" value="1">
+      <button type="submit">Show Filters</button>
+    </form>
+  {% endif %}
+
+
+  {% if filter %}
+    <div class="filter" style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background-color: #f9f9f9;">
+      <h3>Search & Filters</h3>
+      
+      <form action="/search" method="get">
+        <input type="hidden" name="filter" value="1"> 
+        
+        <p>
+          <input
+            type="text"
+            name="query"
+            placeholder="Search entries..."
+            value="{{ query | default('') }}"
+            style="width: 98%; padding: 8px;"
+          >
+        </p>
+
+        <!-- 2. Filter Options -->
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          
+          <div>
+            <label for="sort">Sort by:</label>
+            <select name="sort">
+              <option value="id" {% if sort=="id" %}selected{% endif %}>Default (Newest)</option>
+              <option value="title_asc" {% if sort=="title_asc" %}selected{% endif %}>Title (A-Z)</option>
+              <option value="title_desc" {% if sort=="title_desc" %}selected{% endif %}>Title (Z-A)</option>
+              <option value="year_asc" {% if sort=="year_asc" %}selected{% endif %}>Year (Oldest)</option>
+              <option value="year_desc" {% if sort=="year_desc" %}selected{% endif %}>Year (Newest)</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Year:</label>
+            <input type="number" name="year_min" placeholder="Min" value="{{ year_min | default('') }}" style="width: 60px;">
+            -
+            <input type="number" name="year_max" placeholder="Max" value="{{ year_max | default('') }}" style="width: 60px;">
+          </div>
+
+          <div>
+            <label for="type">Type:</label>
+            <select name="entry_type" id="type"> 
+              <option value="">All Types</option>
+              {% for t in types %}
+                <option value="{{ t.name }}" {% if entry_type==t.name %}selected{% endif %}>{{ t.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <p>
+          <label>Tags:</label>
+          <div class="tags-checkboxes">
+            {% for tag in all_tags %}
+              <label style="display: inline-block; margin-right: 10px;">
+                <input 
+                  type="checkbox" 
+                  name="tags" 
+                  value="{{ tag }}"
+                  {% if tag in selected_tags %}checked{% endif %}
+                > 
+                {{ tag }}
+              </label>
+            {% endfor %}
+          </div>
+        </p>
+
+        <button type="submit" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">
+          Search with Filters
+        </button>
+      </form>
+
+      <form action="/search" method="get" style="margin-top: 10px;">
+        <input type="hidden" name="query" value="{{ query }}">
+        <button type="submit" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer;">
+          Hide Filters
+        </button>
+      </form>
+    </div>
+  {% endif %}
+
+</div>
+<div class="main-container" style="gap: 16px">
   <div style="align-self: start;">
     <a href="/new_entry" class="button general-button">Add entry</a>
   </div>

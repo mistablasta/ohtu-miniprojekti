@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, jsonify, flash
 from db_helper import reset_db
 from entities.entry import (
-    type_from_str, Type,
+    Type, type_from_str
 )
 from repositories import entry_repository as repository
 from config import app, test_env
@@ -127,6 +127,34 @@ def update_entry(entry_id):
 @app.route("/search")
 def search():
     query = request.args.get("query", "")
-    filter = request.args.get("filter", "id")
-    entries = repository.search(query, filter)
-    return render_template("index.html", entries=entries, query=query, filter=filter)
+    filter = request.args.get("filter", default = 0, type = int)
+
+    if filter != 1:
+        entries = repository.search(query)
+        return render_template(
+            "index.html",
+            entries=entries,
+            query=query,
+            filter=0,
+            all_tags=repository.get_all_tags(),
+            types=Type)
+
+    sort = request.args.get("sort", "").strip()
+    year_min = request.args.get("year_min", "").strip()
+    year_max = request.args.get("year_max", "").strip()
+    entry_type = request.args.get("entry_type", "").strip()
+    selected_tags = request.args.getlist("tags")
+
+    entries = repository.search_filter(query, sort, year_min, year_max, entry_type, selected_tags)
+    return render_template(
+        "index.html",
+        entries=entries,
+        query=query,
+        filter=1,
+        sort=sort,
+        year_min=year_min,
+        year_max=year_max,
+        type=entry_type,
+        all_tags=repository.get_all_tags(),
+        selected_tags=selected_tags,
+        types=Type)
