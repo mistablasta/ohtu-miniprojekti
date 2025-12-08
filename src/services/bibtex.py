@@ -37,7 +37,7 @@ def entry_to_bibtex(entry: Entry) -> str:
     ]
 
     # Create padded field lines
-    max_field_length = max(len(f) for f, _ in valid_fields)
+    max_field_length = max((len(f) for f, _ in valid_fields), default=0)
     field_lines = []
     for key, value in valid_fields:
         padded = key.ljust(max_field_length)
