@@ -5,7 +5,7 @@ from entities.entry import Entry, Fields
 
 # Template for a BibTeX entry
 ENTRY_TEMPLATE = Template("""
-@$type{$key
+@$type{$key,
 $fields
 }
 """)
