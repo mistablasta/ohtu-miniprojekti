@@ -1,4 +1,6 @@
-import json, random, string
+import json
+import random
+import string
 
 from sqlalchemy import text
 
@@ -14,7 +16,7 @@ def create(type: Type, fields: dict, tags: list[str] | None = None):
         fields = {}
 
     key = _generate_unique_key(fields)
-    
+
     sql = text("""
         INSERT INTO entries (key, type, fields)
         VALUES (:key, :type, :fields)
@@ -82,9 +84,9 @@ def _generate_unique_key(fields: dict) -> str:
     def _clean_year(year) -> str:
         return "".join(ch for ch in str(year) if ch.isdigit())
 
-    def _clean(string: str) -> str:
-        string_lower = string.lower()
-        return "".join(ch for ch in string_lower if ("a" <= ch <= "z") or ("0" <= ch <= "9"))
+    def _clean(word: str) -> str:
+        word_lower = word.lower()
+        return "".join(ch for ch in word_lower if ("a" <= ch <= "z") or ("0" <= ch <= "9"))
 
     def _generate_base_key(fields: dict) -> str:
         author = fields.get(Fields.AUTHOR, "")
@@ -98,12 +100,12 @@ def _generate_unique_key(fields: dict) -> str:
         key_parts = [part for part in [author_part, year_part, title_part] if part]
         base_key = "".join(key_parts)
         return base_key
-    
+
     def _key_exists(key: str) -> bool:
         sql = text("SELECT 1 FROM entries WHERE key = :key LIMIT 1")
         result = db.session.execute(sql, {"key": key})
         return result.scalar() is not None
-    
+
     def _ensure_unique_key(base_key: str) -> str:
         key = base_key
         counter = 1
