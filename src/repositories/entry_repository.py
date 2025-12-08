@@ -1,4 +1,4 @@
-import json
+import json, random, string
 
 from sqlalchemy import text
 
@@ -114,6 +114,8 @@ def _generate_unique_key(fields: dict) -> str:
 
         return key
     base_key = _generate_base_key(fields)
+    if not base_key:
+        base_key = "".join(random.choices(string.ascii_lowercase + string.digits, k=5))
     return _ensure_unique_key(base_key)
 
 def get(id: int) -> Entry:
