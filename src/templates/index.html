@@ -114,15 +114,30 @@ Bibliography App
 
 </div>
 <div class="main-container" style="gap: 16px">
-  <div style="align-self: start;">
-    <a href="/new_entry" class="button general-button">Add entry</a>
+    <p id="error" style="color: red; height: 1rem; margin: 0"></p>
+
+  <!-- Actions -->
+  <div class="main-container-actions">
+      <div>
+        <a href="/new_entry" class="button general-button">Add entry</a>
+      </div>
+      <div>
+          <a id="batch-delete" class="button general-button">Delete selection</a>
+      </div>
+      <div>
+          <a id="batch-bibtex" class="button general-button">Export BibTeX</a>
+      </div>
   </div>
 
   <!-- Näyttäää entryt -->
   <div class="main-entry-container">
     <div class="entries-container">
       {% for entry in entries %}
-      <div class="entry-card">
+      <div class="entry-card" data-entry-id="{{ entry.id }}">
+        <div class="entry-card-selector">
+            <input class="entry-checkbox" type="checkbox">
+        </div>
+
         {% for key, value in entry.fields.items() %}
           {% if value and key != 'id' %}
             <div class="entry-content">
@@ -153,4 +168,80 @@ Bibliography App
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra %}
+
+    <!-- Handle batch actions-->
+    <script>
+        const batchUrl = {{ url_for("batch_action") | tojson }};
+        const errorBox = document.querySelector("#error");
+        const batchDelete = document.querySelector("#batch-delete");
+        const batchBibtex = document.querySelector("#batch-bibtex");
+        const checkboxes = document.querySelectorAll(".entry-checkbox");
+
+        const showError = msg => (errorBox.textContent = msg || "");
+
+        const downloadContent = content => {
+            const a = document.createElement("a");
+            a.href = "data:text/plain," + encodeURIComponent(content);
+            a.download = "references.bib";
+            a.click();
+        };
+
+        const getSelectedEntries = () =>
+            [...checkboxes]
+                .filter(c => c.checked)
+                .map(c => c.closest(".entry-card")?.dataset.entryId)
+                .filter(Boolean);
+
+        async function runBatchAction(action) {
+            // Clear any previous errors
+            showError("");
+
+            // Ensure selection is made
+            const selection = getSelectedEntries();
+            if (!selection.length) {
+                showError("Make a selection first!");
+                return;
+            }
+
+            // Confirm action if deleting
+            if (action === "delete")
+                if (!confirm(`Are you sure you want to delete ${selection.length} entries?`))
+                    return
+
+            try {
+                const response = await fetch(batchUrl, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ action, selection })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showError(data.error || "An error occurred");
+                    return;
+                }
+
+                // Handle deletion
+                if (action === "delete") {
+                    window.location.reload()
+                    return
+                }
+
+                // Handle bibtex response
+                if (action === "bibtex" && data.bibtex) {
+                    downloadContent(data.bibtex);
+                }
+
+            } catch (err) {
+                showError("Network error" + err.toString());
+            }
+        }
+
+        batchDelete.addEventListener("click", (event) => runBatchAction("delete"))
+        batchBibtex.addEventListener("click", (event) => runBatchAction("bibtex"))
+    </script>
 {% endblock %}
