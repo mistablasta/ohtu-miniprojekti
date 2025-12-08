@@ -20,7 +20,7 @@ def validate_entry(form) -> str | None:
 
     # Check if all required fields are present
     for required_field in entry_type_data.required_fields:
-        if required_field not in form or not _is_valid_string(form[required_field]):
+        if required_field not in form or not is_valid_string(form[required_field]):
             return required_field.lower().capitalize() + " is a required field."
 
     # Special field checks
@@ -29,7 +29,7 @@ def validate_entry(form) -> str | None:
 
     return None
 
-def _is_valid_string(value):
+def is_valid_string(value):
     """
     Returns true if the given string is non-empty. Accounts for whitespace strings.
     """

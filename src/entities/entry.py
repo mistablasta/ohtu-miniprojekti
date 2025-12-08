@@ -36,6 +36,18 @@ class Fields:
     SERIES = "series"
     HOWPUBLISHED = "howpublished"
 
+    _cache = None
+
+    @staticmethod
+    def all():
+        if Fields._cache is not None:
+            return Fields._cache
+        return [
+            v
+            for k, v in vars(Fields).items()
+            if not k.startswith("_") and isinstance(v, str)
+        ]
+
 # Common fields for a few entry types
 common = [Fields.TITLE, Fields.YEAR, Fields.AUTHOR]
 

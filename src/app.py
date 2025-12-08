@@ -6,7 +6,7 @@ from entities.entry import (
 from repositories import entry_repository as repository
 from config import app, test_env
 from util import validate_entry, dictionary_to_entry
-
+from services import batching
 
 @app.route("/")
 def index():
@@ -169,3 +169,10 @@ def search():
         all_tags=repository.get_all_tags(),
         selected_tags=selected_tags,
         types=Type)
+
+@app.route("/batch", methods=["POST"])
+def batch_action():
+    body = request.get_json()
+    action = body["action"]
+    selection = body["selection"]
+    return batching.process_request(action, selection)
