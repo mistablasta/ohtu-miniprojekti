@@ -83,7 +83,7 @@ def create_entry():
         )
 
     # Create the entry
-    repository.create("test", entry_type, fields, tags)
+    repository.create(entry_type, fields, tags)
 
     flash("Entry added")
     return redirect("/")
