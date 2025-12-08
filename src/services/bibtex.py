@@ -14,6 +14,10 @@ def entries_to_bibtex(entries: list[Entry]) -> str:
     """
     Convert a list of entries to a single BibTeX string
     """
+    # Return nothing if no entries are given
+    if entries is None:
+        return ""
+
     bibtex_entries = [entry_to_bibtex(entry) for entry in entries]
     return "".join(bibtex_entries)
 
@@ -21,6 +25,9 @@ def entry_to_bibtex(entry: Entry) -> str:
     """
     Convert a single entry to a BibTeX formatted string
     """
+    # Return nothing if no entry is given
+    if entry is None:
+        return ""
 
     # Get all fields that we're going to export
     valid_fields = [
