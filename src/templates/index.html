@@ -112,11 +112,11 @@ Bibliography App
     </div>
   {% endif %}
   <!-- Actions -->
+  <a id="error" style="color: red; height: 1rem; margin: 0; background: white;"></a>
   <div class="main-container-actions">
     <a href="/new_entry" class="button general-button">Add entry</a>
     <a id="batch-delete" class="button general-button">Delete selection</a>
     <a id="batch-bibtex" class="button general-button">Export BibTeX</a>
-    <a id="error" style="color: red; height: 1rem; margin: 0; background: white;"></a>
   </div>
 
   <!-- Näyttäää entryt -->
@@ -127,29 +127,32 @@ Bibliography App
         <div class="entry-card-selector">
             <input class="entry-checkbox" type="checkbox">
         </div>
-
-        {% for key, value in entry.fields.items() %}
-          {% if value and key != 'id' %}
-            <div class="entry-content">
-              <strong>{{ key|capitalize }}:</strong> {{ value }}
-            </div>
-          {% endif %}
-        {% endfor %}
         
-        {% if entry.tags %}
-        <div class="entry-content">
-          <strong>Tags:</strong> {{ entry.get_tags() }}
-        </div>
-        {% endif %}
+        <div style="display: flex; flex-direction: column;;">
+          <b>{{ entry.type.name|capitalize }}</b>
+          {% for key, value in entry.fields.items() %}
+            {% if value and key != 'id' %}
+              <div class="entry-content">
+                <strong>{{ key|capitalize }}:</strong> {{ value }}
+              </div>
+            {% endif %}
+          {% endfor %}
+          
+          {% if entry.tags %}
+          <div class="entry-content">
+            <strong>Tags:</strong> {{ entry.get_tags() }}
+          </div>
+          {% endif %}
 
-        <!-- Edit and Delete buttons -->
-        <div style="margin-top: 10px;">
-          <a href="/edit_entry/{{ entry.id }}" style="text-decoration: none;">
-            <button type="button">Edit</button>
-          </a>
-          <form action="/delete_entry/{{ entry.id }}" method="post" style="display: inline;">
-            <button type="submit" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</button>
-          </form>
+          <!-- Edit and Delete buttons -->
+          <div style="margin-top: 10px;">
+            <a href="/edit_entry/{{ entry.id }}" style="text-decoration: none;">
+              <button type="button">Edit</button>
+            </a>
+            <form action="/delete_entry/{{ entry.id }}" method="post" style="display: inline;">
+              <button type="submit" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</button>
+            </form>
+          </div>
         </div>
       </div>
       {% else %}
