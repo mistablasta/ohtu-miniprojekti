@@ -11,29 +11,29 @@ Bibliography App
 </div>
 
 <!-- Search and Filter Section -->
-<div style="margin: 20px 0;">
+<div class="main-container" style="gap: 16px;">
+  <div class="button-container">
+    {% if not filter %}
+      <form action="/search" method="get">
+        <input
+          type="text"
+          name="query"
+          placeholder="Search entries..."
+          value="{{ query | default('') }}"
+        >
+        <button type="submit">Search</button>
+      </form>
 
-  {% if not filter %}
-    <form action="/search" method="get" style="display: inline-block;">
-      <input
-        type="text"
-        name="query"
-        placeholder="Search entries..."
-        value="{{ query | default('') }}"
-      >
-      <button type="submit">Search</button>
-    </form>
-
-    <form action="/search" method="get" style="display: inline-block; margin-left: 10px;">
-      <input type="hidden" name="query" value="{{ query }}">
-      <input type="hidden" name="filter" value="1">
-      <button type="submit">Show Filters</button>
-    </form>
-  {% endif %}
-
+      <form action="/search" method="get">
+        <input type="hidden" name="query" value="{{ query }}">
+        <input type="hidden" name="filter" value="1">
+        <button type="submit">Show Filters</button>
+      </form>
+    {% endif %}
+  </div>
 
   {% if filter %}
-    <div class="filter" style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background-color: #f9f9f9;">
+    <div class="menu-container">
       <h3>Search & Filters</h3>
       
       <form action="/search" method="get">
@@ -45,7 +45,7 @@ Bibliography App
             name="query"
             placeholder="Search entries..."
             value="{{ query | default('') }}"
-            style="width: 98%; padding: 8px;"
+            style="width: 96%; padding: 8px;"
           >
         </p>
 
@@ -111,9 +111,6 @@ Bibliography App
       </form>
     </div>
   {% endif %}
-
-</div>
-<div class="main-container" style="gap: 16px">
     <p id="error" style="color: red; height: 1rem; margin: 0"></p>
 
   <!-- Actions -->

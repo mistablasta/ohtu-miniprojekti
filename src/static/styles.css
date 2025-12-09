@@ -17,14 +17,25 @@ body {
     margin: 20px;
     display: flex;
     flex-direction: column;
-    /* gap: 16px; */
-    align-items: start;
+    justify-content: center;
+    align-items: center;
 }
 
 .main-container-actions {
     display: flex;
     flex-direction: row;
     gap: 1rem;
+}
+
+.button-container {
+    background: #b2c6b3;
+    border: solid 1px #454851;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
 }
 
 .menu-container {
