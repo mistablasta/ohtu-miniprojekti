@@ -105,3 +105,14 @@ def dictionary_to_entry(doi: str):
 
     entryid = repository.create(key, etype, fields)
     return entryid
+
+def validate_year(value_str):
+    if value_str:
+        try:
+            year = int(value_str)
+        except ValueError:
+            return "Year must be a number."
+
+        if year < 0 or year > 3000:
+            return "Year must be between 0-3000"
+    return None
