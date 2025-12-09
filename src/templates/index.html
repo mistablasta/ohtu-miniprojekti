@@ -12,8 +12,8 @@ Bibliography App
 
 <!-- Search and Filter Section -->
 <div class="main-container" style="gap: 16px;">
+  {% if not filter %}
   <div class="button-container">
-    {% if not filter %}
       <form action="/search" method="get">
         <input
           type="text"
@@ -29,8 +29,8 @@ Bibliography App
         <input type="hidden" name="filter" value="1">
         <button type="submit">Show Filters</button>
       </form>
+    </div>
     {% endif %}
-  </div>
 
   {% if filter %}
     <div class="menu-container">
@@ -111,19 +111,12 @@ Bibliography App
       </form>
     </div>
   {% endif %}
-    <p id="error" style="color: red; height: 1rem; margin: 0"></p>
-
   <!-- Actions -->
   <div class="main-container-actions">
-      <div>
-        <a href="/new_entry" class="button general-button">Add entry</a>
-      </div>
-      <div>
-          <a id="batch-delete" class="button general-button">Delete selection</a>
-      </div>
-      <div>
-          <a id="batch-bibtex" class="button general-button">Export BibTeX</a>
-      </div>
+    <a href="/new_entry" class="button general-button">Add entry</a>
+    <a id="batch-delete" class="button general-button">Delete selection</a>
+    <a id="batch-bibtex" class="button general-button">Export BibTeX</a>
+    <a id="error" style="color: red; height: 1rem; margin: 0; background: white;"></a>
   </div>
 
   <!-- Näyttäää entryt -->
