@@ -65,6 +65,8 @@ def _link_tags_to_entry(entry_id: int, tags: list[str]):
         """)
         db.session.execute(sql, {"entry_id": entry_id, "tag_id": tag_id})
 
+    _delete_unused_tags()
+
 def _generate_unique_key(fields: dict) -> str:
     """
     Build a key from author, year, and title and ensure uniqueness in the database.
@@ -155,6 +157,7 @@ def delete(id: int):
     """
     sql = text("""DELETE FROM entries WHERE id = :id""")
     db.session.execute(sql, {"id": id})
+    _delete_unused_tags()
     db.session.commit()
 
 def update(entry: Entry):
@@ -330,3 +333,15 @@ def _parse_entry(result) -> Entry | None:
     tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()] if tags_str else []
 
     return Entry(id=id, key=key, type=type_enum, fields=fields_dict, tags=tags)
+
+def _delete_unused_tags():
+    """
+    Remove tags that are not linked to any entry.
+    """
+    sql = text("""
+        DELETE FROM tags t
+        WHERE NOT EXISTS (
+            SELECT 1 FROM entry_tags et WHERE et.tag_id = t.id
+        )
+    """)
+    db.session.execute(sql)
