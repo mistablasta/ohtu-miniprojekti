@@ -118,3 +118,9 @@ Adding a valid DOI link works
     Input Text  doi  https://doi.org/10.1126/science.aar3646
     Click Button  Next
     Wait Until Page Contains  Edit Entry  timeout=15s
+
+Adding a valid ACM link works
+    Go To  ${SELECT_ENTRY_TYPE_URL}
+    Input Text  doi  https://dl.acm.org/doi/10.1145/2380552.2380613
+    Click Button  Next
+    Wait Until Page Contains  Edit Entry  timeout=15s
