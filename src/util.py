@@ -85,7 +85,7 @@ def dictionary_to_entry(doi: str):
     metadata = etype.get_metadata()
     allowed_fields = metadata.get_required_fields() + metadata.get_optional_fields()
 
-    fields = {field_enum: "" for field_enum in allowed_fields} # Default everything to "" so all fields visible
+    fields = {field_enum: "" for field_enum in allowed_fields}
 
     for bib_key, field_enum in field_lookup.items():
         if bib_key in bib and field_enum in allowed_fields:
