@@ -80,27 +80,14 @@ def dictionary_to_entry(doi: str):
     else:
         etype = Type.MISC
 
-    bib_to_fields = {
-        "title": Fields.TITLE,
-        "year": Fields.YEAR,
-        "author": Fields.AUTHOR,
-        "publisher": Fields.PUBLISHER,
-        "journal": Fields.JOURNAL,
-        "edition": Fields.EDITION,
-        "month": Fields.MONTH,
-        "note": Fields.NOTE,
-        "number": Fields.NUMBER,
-        "volume": Fields.VOLUME,
-        "series": Fields.SERIES,
-        "howpublished": Fields.HOWPUBLISHED,
-    }
+    field_lookup = {f.lower(): f for f in Fields.all()}
 
     metadata = etype.get_metadata()
     allowed_fields = metadata.get_required_fields() + metadata.get_optional_fields()
 
-    fields = {field_enum: "" for field_enum in allowed_fields}
+    fields = {field_enum: "" for field_enum in allowed_fields} # Default everything to "" so all fields visible
 
-    for bib_key, field_enum in bib_to_fields.items():
+    for bib_key, field_enum in field_lookup.items():
         if bib_key in bib and field_enum in allowed_fields:
             fields[field_enum] = bib[bib_key]
 
