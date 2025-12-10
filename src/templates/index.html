@@ -35,7 +35,11 @@ Bibliography App
   {% if filter %}
     <div class="filter" style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background-color: #f9f9f9;">
       <h3>Search & Filters</h3>
-      
+        {% if error %}
+        <div class="alert">
+          {{ error }}
+        </div>
+        {% endif %}
       <form action="/search" method="get">
         <input type="hidden" name="filter" value="1"> 
         
