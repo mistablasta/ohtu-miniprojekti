@@ -1,17 +1,21 @@
 import json
+import random
+import string
 
 from sqlalchemy import text
 
 from config import db
-from entities.entry import Entry, Type
+from entities.entry import Entry, Type, Fields
 
 
-def create(key: str, type: Type, fields: dict, tags: list[str] | None = None):
+def create(type: Type, fields: dict, tags: list[str] | None = None):
     """
     Create a new entry
     """
     if fields is None:
         fields = {}
+
+    key = _generate_unique_key(fields)
 
     sql = text("""
         INSERT INTO entries (key, type, fields)
@@ -61,6 +65,63 @@ def _link_tags_to_entry(entry_id: int, tags: list[str]):
         """)
         db.session.execute(sql, {"entry_id": entry_id, "tag_id": tag_id})
 
+    _delete_unused_tags()
+
+def _generate_unique_key(fields: dict) -> str:
+    """
+    Build a key from author, year, and title and ensure uniqueness in the database.
+    """
+    def _extract_author(author: str) -> str:
+        if not author:
+            return ""
+        first_word = author.strip().split()[0] if author.strip() else ""
+        return _clean(first_word)
+
+    def _extract_title(title: str) -> str:
+        if not title:
+            return ""
+        first_word = title.split()[0]
+        return _clean(first_word)
+
+    def _clean_year(year) -> str:
+        return "".join(ch for ch in str(year) if ch.isdigit())
+
+    def _clean(word: str) -> str:
+        word_lower = word.lower()
+        return "".join(ch for ch in word_lower if ("a" <= ch <= "z") or ("0" <= ch <= "9"))
+
+    def _generate_base_key(fields: dict) -> str:
+        author = fields.get(Fields.AUTHOR, "")
+        title = fields.get(Fields.TITLE, "")
+        year = fields.get(Fields.YEAR, "")
+
+        author_part = _extract_author(author)
+        title_part = _extract_title(title)
+        year_part = _clean_year(year)
+
+        key_parts = [part for part in [author_part, year_part, title_part] if part]
+        base_key = "".join(key_parts)
+        return base_key
+
+    def _key_exists(key: str) -> bool:
+        sql = text("SELECT 1 FROM entries WHERE key = :key LIMIT 1")
+        result = db.session.execute(sql, {"key": key})
+        return result.scalar() is not None
+
+    def _ensure_unique_key(base_key: str) -> str:
+        key = base_key
+        counter = 1
+
+        while _key_exists(key):
+            key = f"{base_key}{counter}"
+            counter += 1
+
+        return key
+    base_key = _generate_base_key(fields)
+    if not base_key:
+        base_key = "".join(random.choices(string.ascii_lowercase + string.digits, k=5))
+    return _ensure_unique_key(base_key)
+
 def get(id: int) -> Entry:
     """
     Get an entry by its ID
@@ -96,6 +157,7 @@ def delete(id: int):
     """
     sql = text("""DELETE FROM entries WHERE id = :id""")
     db.session.execute(sql, {"id": id})
+    _delete_unused_tags()
     db.session.commit()
 
 def update(entry: Entry):
@@ -271,3 +333,15 @@ def _parse_entry(result) -> Entry | None:
     tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()] if tags_str else []
 
     return Entry(id=id, key=key, type=type_enum, fields=fields_dict, tags=tags)
+
+def _delete_unused_tags():
+    """
+    Remove tags that are not linked to any entry.
+    """
+    sql = text("""
+        DELETE FROM tags t
+        WHERE NOT EXISTS (
+            SELECT 1 FROM entry_tags et WHERE et.tag_id = t.id
+        )
+    """)
+    db.session.execute(sql)

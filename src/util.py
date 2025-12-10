@@ -77,8 +77,6 @@ def dictionary_to_entry(doi: str):
     else:
         etype = Type.MISC
 
-    key = bib.get("ID", bib.get("doi", "unknown"))
-
     bib_to_fields = {
         "title": Fields.TITLE,
         "year": Fields.YEAR,
@@ -103,5 +101,5 @@ def dictionary_to_entry(doi: str):
         if bib_key in bib and field_enum in allowed_fields
     }
 
-    entryid = repository.create(key, etype, fields)
+    entryid = repository.create(etype, fields)
     return entryid
