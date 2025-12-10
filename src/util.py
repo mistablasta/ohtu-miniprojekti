@@ -98,11 +98,11 @@ def dictionary_to_entry(doi: str):
     metadata = etype.get_metadata()
     allowed_fields = metadata.get_required_fields() + metadata.get_optional_fields()
 
-    fields = {
-        field_enum: bib[bib_key]
-        for bib_key, field_enum in bib_to_fields.items()
-        if bib_key in bib and field_enum in allowed_fields
-    }
+    fields = {field_enum: "" for field_enum in allowed_fields}
+
+    for bib_key, field_enum in bib_to_fields.items():
+        if bib_key in bib and field_enum in allowed_fields:
+            fields[field_enum] = bib[bib_key]
 
     entryid = repository.create(etype, fields)
     return entryid
