@@ -37,6 +37,9 @@ def is_valid_string(value):
 
 def doi_to_dictionary(doi: str):
     try:
+        if doi.startswith('https://dl.acm.org/doi/'):
+            print(doi, "DEBUG")
+            doi = doi[23:]
         if doi.startswith("http"):
             url = doi
         else:
