@@ -137,7 +137,7 @@ Bibliography App
           {% for key, value in entry.fields.items() %}
             {% if value and key != 'id' %}
               <div class="entry-content">
-                <strong>{{ key|capitalize }}:</strong> {{ value }}
+                  <strong>{{ key|capitalize }}:</strong> <span title="{{ value }}">{{ value }}</span>
               </div>
             {% endif %}
           {% endfor %}
