@@ -4,6 +4,9 @@
 
 [![codecov](https://codecov.io/gh/mistablasta/ohtu-miniprojekti/graph/badge.svg?token=DQCI5HRZ87)](https://codecov.io/gh/mistablasta/ohtu-miniprojekti)
 
+## Loppuraportti
+[Loppuraportti](https://helsinkifi-my.sharepoint.com/:w:/g/personal/lainpelo_ad_helsinki_fi/IQDcxlElcq00T4e9mmIP81NKAQzBZ5Q7alLUy2SHqzOA9Xw?e=OMuNal)
+
 ## Definition of Done
 These are the requirements for each feature branch before merging into the **main** branch.
 
