@@ -79,7 +79,7 @@ Bibliography App
             <select name="entry_type" id="type"> 
               <option value="">All Types</option>
               {% for t in types %}
-                <option value="{{ t.name }}" {% if entry_type==t.name %}selected{% endif %}>{{ t.name }}</option>
+                <option value="{{ t.name }}" {% if type ==t.name %}selected{% endif %}>{{ t.name.capitalize() }}</option>
               {% endfor %}
             </select>
           </div>
