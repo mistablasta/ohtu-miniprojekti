@@ -11,31 +11,35 @@ Bibliography App
 </div>
 
 <!-- Search and Filter Section -->
-<div style="margin: 20px 0;">
-
+<div class="main-container" style="gap: 16px;">
   {% if not filter %}
-    <form action="/search" method="get" style="display: inline-block;">
-      <input
-        type="text"
-        name="query"
-        placeholder="Search entries..."
-        value="{{ query | default('') }}"
-      >
-      <button type="submit">Search</button>
-    </form>
+  <div class="button-container">
+      <form action="/search" method="get">
+        <input
+          type="text"
+          name="query"
+          placeholder="Search entries..."
+          value="{{ query | default('') }}"
+        >
+        <button type="submit">Search</button>
+      </form>
 
-    <form action="/search" method="get" style="display: inline-block; margin-left: 10px;">
-      <input type="hidden" name="query" value="{{ query }}">
-      <input type="hidden" name="filter" value="1">
-      <button type="submit">Show Filters</button>
-    </form>
-  {% endif %}
-
+      <form action="/search" method="get">
+        <input type="hidden" name="query" value="{{ query }}">
+        <input type="hidden" name="filter" value="1">
+        <button type="submit">Show Filters</button>
+      </form>
+    </div>
+    {% endif %}
 
   {% if filter %}
-    <div class="filter" style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background-color: #f9f9f9;">
+    <div class="menu-container">
       <h3>Search & Filters</h3>
-      
+        {% if error %}
+        <div class="alert">
+          {{ error }}
+        </div>
+        {% endif %}
       <form action="/search" method="get">
         <input type="hidden" name="filter" value="1"> 
         
@@ -45,7 +49,7 @@ Bibliography App
             name="query"
             placeholder="Search entries..."
             value="{{ query | default('') }}"
-            style="width: 98%; padding: 8px;"
+            style="width: 96%; padding: 8px;"
           >
         </p>
 
@@ -75,7 +79,7 @@ Bibliography App
             <select name="entry_type" id="type"> 
               <option value="">All Types</option>
               {% for t in types %}
-                <option value="{{ t.name }}" {% if entry_type==t.name %}selected{% endif %}>{{ t.name }}</option>
+                <option value="{{ t.name }}" {% if type ==t.name %}selected{% endif %}>{{ t.name.capitalize() }}</option>
               {% endfor %}
             </select>
           </div>
@@ -111,40 +115,49 @@ Bibliography App
       </form>
     </div>
   {% endif %}
-
-</div>
-<div class="main-container" style="gap: 16px">
-  <div style="align-self: start;">
+  <!-- Actions -->
+  <b><a id="error" style="color: black; height: 1rem; margin: 0;"></a></b>
+  <div class="main-container-actions">
     <a href="/new_entry" class="button general-button">Add entry</a>
+    <a id="batch-delete" class="button general-button">Delete selection</a>
+    <a id="batch-bibtex" class="button general-button">Export BibTeX</a>
+    <a id="select-all" class="button general-button">Select All</a>
   </div>
 
   <!-- Näyttäää entryt -->
   <div class="main-entry-container">
     <div class="entries-container">
       {% for entry in entries %}
-      <div class="entry-card">
-        {% for key, value in entry.fields.items() %}
-          {% if value and key != 'id' %}
-            <div class="entry-content">
-              <strong>{{ key|capitalize }}:</strong> {{ value }}
-            </div>
-          {% endif %}
-        {% endfor %}
-        
-        {% if entry.tags %}
-        <div class="entry-content">
-          <strong>Tags:</strong> {{ entry.get_tags() }}
+      <div class="entry-card" data-entry-id="{{ entry.id }}">
+        <div class="entry-card-selector">
+            <input class="entry-checkbox" type="checkbox">
         </div>
-        {% endif %}
+        
+        <div style="display: flex; flex-direction: column;;">
+          <b>{{ entry.type.name|capitalize }}</b>
+          {% for key, value in entry.fields.items() %}
+            {% if value and key != 'id' %}
+              <div class="entry-content">
+                  <strong>{{ key|capitalize }}:</strong> <span title="{{ value }}">{{ value }}</span>
+              </div>
+            {% endif %}
+          {% endfor %}
+          
+          {% if entry.tags %}
+          <div class="entry-content">
+            <strong>Tags:</strong> {{ entry.get_tags() }}
+          </div>
+          {% endif %}
 
-        <!-- Edit and Delete buttons -->
-        <div style="margin-top: 10px;">
-          <a href="/edit_entry/{{ entry.id }}" style="text-decoration: none;">
-            <button type="button">Edit</button>
-          </a>
-          <form action="/delete_entry/{{ entry.id }}" method="post" style="display: inline;">
-            <button type="submit" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</button>
-          </form>
+          <!-- Edit and Delete buttons -->
+          <div style="margin-top: 10px;">
+            <a href="/edit_entry/{{ entry.id }}" style="text-decoration: none;">
+              <button type="button">Edit</button>
+            </a>
+            <form action="/delete_entry/{{ entry.id }}" method="post" style="display: inline;">
+              <button type="submit" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</button>
+            </form>
+          </div>
         </div>
       </div>
       {% else %}
@@ -153,4 +166,87 @@ Bibliography App
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra %}
+
+    <!-- Handle batch actions-->
+    <script>
+        const batchUrl = {{ url_for("batch_action") | tojson }};
+        const errorBox = document.querySelector("#error");
+        const batchDelete = document.querySelector("#batch-delete");
+        const batchBibtex = document.querySelector("#batch-bibtex");
+        const checkboxes = document.querySelectorAll(".entry-checkbox");
+        const selectAll = document.querySelector("#select-all")
+
+        const showError = msg => (errorBox.textContent = msg || "");
+
+        const downloadContent = content => {
+            const a = document.createElement("a");
+            a.href = "data:text/plain," + encodeURIComponent(content);
+            a.download = "references.bib";
+            a.click();
+        };
+
+        const getSelectedEntries = () =>
+            [...checkboxes]
+                .filter(c => c.checked)
+                .map(c => c.closest(".entry-card")?.dataset.entryId)
+                .filter(Boolean);
+
+        async function runBatchAction(action) {
+            // Clear any previous errors
+            showError("");
+
+            // Ensure selection is made
+            const selection = getSelectedEntries();
+            if (!selection.length) {
+                showError("Make a selection first!");
+                return;
+            }
+
+            // Confirm action if deleting
+            if (action === "delete")
+                if (!confirm(`Are you sure you want to delete ${selection.length} entries?`))
+                    return
+
+            try {
+                const response = await fetch(batchUrl, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ action, selection })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showError(data.error || "An error occurred");
+                    return;
+                }
+
+                // Handle deletion
+                if (action === "delete") {
+                    window.location.reload()
+                    return
+                }
+
+                // Handle bibtex response
+                if (action === "bibtex" && data.bibtex) {
+                    downloadContent(data.bibtex);
+                }
+
+            } catch (err) {
+                showError("Network error" + err.toString());
+            }
+        }
+
+        let allSelected = false;
+
+        batchDelete.addEventListener("click", (event) => runBatchAction("delete"))
+        batchBibtex.addEventListener("click", (event) => runBatchAction("bibtex"))
+        selectAll.addEventListener("click", (event) => {
+            allSelected = !allSelected;
+            checkboxes.forEach((checkbox) => checkbox.checked = allSelected)
+        })
+    </script>
 {% endblock %}

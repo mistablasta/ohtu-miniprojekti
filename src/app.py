@@ -5,8 +5,8 @@ from entities.entry import (
 )
 from repositories import entry_repository as repository
 from config import app, test_env
-from util import validate_entry, dictionary_to_entry
-
+from util import validate_entry, dictionary_to_entry, validate_year
+from services import batching
 
 @app.route("/")
 def index():
@@ -83,7 +83,7 @@ def create_entry():
         )
 
     # Create the entry
-    repository.create("test", entry_type, fields, tags)
+    repository.create(entry_type, fields, tags)
 
     flash("Entry added")
     return redirect("/")
@@ -156,16 +156,48 @@ def search():
     entry_type = request.args.get("entry_type", "").strip()
     selected_tags = request.args.getlist("tags")
 
-    entries = repository.search_filter(query, sort, year_min, year_max, entry_type, selected_tags)
+    error_min = validate_year(year_min)
+    error_max = validate_year(year_max)
+
+    error = None
+    if error_min and error_max:
+        error = error_min
+    elif error_min:
+        error = error_min
+    elif error_max:
+        error = error_max
+
+    # Only use year filters if they are valid
+    search_year_min = int(year_min) if year_min and not error_min else None
+    search_year_max = int(year_max) if year_max and not error_max else None
+
+    if search_year_min is not None and search_year_max is not None:
+        if search_year_min > search_year_max:
+            search_year_min, search_year_max = search_year_max, search_year_min
+
+    entries = repository.search_filter(query,
+                                        sort,
+                                        search_year_min,
+                                        search_year_max,
+                                        entry_type,
+                                        selected_tags)
     return render_template(
         "index.html",
         entries=entries,
         query=query,
         filter=1,
         sort=sort,
-        year_min=year_min,
-        year_max=year_max,
+        year_min=search_year_min,
+        year_max=search_year_max,
+        error=error,
         type=entry_type,
         all_tags=repository.get_all_tags(),
         selected_tags=selected_tags,
         types=Type)
+
+@app.route("/batch", methods=["POST"])
+def batch_action():
+    body = request.get_json()
+    action = body["action"]
+    selection = body["selection"]
+    return batching.process_request(action, selection)

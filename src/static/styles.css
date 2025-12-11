@@ -7,7 +7,6 @@ body {
 .top-bar {
     background-color: #454851;
     padding: 20px;
-    width: 100%;
     height: 40px;
     color: white;
     bottom: 0;
@@ -17,8 +16,30 @@ body {
     margin: 20px;
     display: flex;
     flex-direction: column;
-    /* gap: 16px; */
-    align-items: start;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-container-actions {
+    background: #b2c6b3;
+    border: solid 1px #454851;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.button-container {
+    background: #b2c6b3;
+    border: solid 1px #454851;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
 }
 
 .menu-container {
@@ -54,7 +75,6 @@ body {
     display: block;
     background: #ffffff;
     color: black;
-    /* border: 2px solid #29d66b; */
     border-radius: 8px;
     padding: 8px;
     text-align: center;
@@ -113,9 +133,10 @@ body {
 
 .entries-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 20px;
-    justify-content: space-evenly;
+    justify-content: center;
+    max-width: 60rem;
 }
 
 .entry-card {
@@ -123,12 +144,24 @@ body {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
-    width: 200px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     transition: transform 0.2s, box-shadow 0.2s;
-    /* justify-content: space-evenly;
-    display: flex;
-    flex-direction: column; */
+    position: relative;
+}
+
+.entry-card-selector {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+}
+
+.entry-card-selector input[type="checkbox"] {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    margin: 0;
 }
 
 .entry-card:hover {

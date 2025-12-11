@@ -20,7 +20,7 @@ def validate_entry(form) -> str | None:
 
     # Check if all required fields are present
     for required_field in entry_type_data.required_fields:
-        if required_field not in form or not _is_valid_string(form[required_field]):
+        if required_field not in form or not is_valid_string(form[required_field]):
             return required_field.lower().capitalize() + " is a required field."
 
     # Special field checks
@@ -29,7 +29,7 @@ def validate_entry(form) -> str | None:
 
     return None
 
-def _is_valid_string(value):
+def is_valid_string(value):
     """
     Returns true if the given string is non-empty. Accounts for whitespace strings.
     """
@@ -37,6 +37,9 @@ def _is_valid_string(value):
 
 def doi_to_dictionary(doi: str):
     try:
+        if doi.startswith('https://dl.acm.org/doi/'):
+            print(doi, "DEBUG")
+            doi = doi[23:]
         if doi.startswith("http"):
             url = doi
         else:
@@ -69,39 +72,34 @@ def dictionary_to_entry(doi: str):
     if "error" in bib:
         raise ValueError(bib["error"])
 
-    bib_type = bib.get("ENTRYTYPE", "").lower()
-    if bib_type == "article":
-        etype = Type.ARTICLE
-    elif bib_type == "book":
-        etype = Type.BOOK
-    else:
+    bib_type = bib.get("ENTRYTYPE", "").strip().lower()
+
+    try:
+        etype = Type[bib_type.upper()]
+    except KeyError:
         etype = Type.MISC
 
-    key = bib.get("ID", bib.get("doi", "unknown"))
-
-    bib_to_fields = {
-        "title": Fields.TITLE,
-        "year": Fields.YEAR,
-        "author": Fields.AUTHOR,
-        "publisher": Fields.PUBLISHER,
-        "journal": Fields.JOURNAL,
-        "edition": Fields.EDITION,
-        "month": Fields.MONTH,
-        "note": Fields.NOTE,
-        "number": Fields.NUMBER,
-        "volume": Fields.VOLUME,
-        "series": Fields.SERIES,
-        "howpublished": Fields.HOWPUBLISHED,
-    }
+    field_lookup = {f.lower(): f for f in Fields.all()}
 
     metadata = etype.get_metadata()
     allowed_fields = metadata.get_required_fields() + metadata.get_optional_fields()
 
-    fields = {
-        field_enum: bib[bib_key]
-        for bib_key, field_enum in bib_to_fields.items()
-        if bib_key in bib and field_enum in allowed_fields
-    }
+    fields = {field_enum: "" for field_enum in allowed_fields}
 
-    entryid = repository.create(key, etype, fields)
+    for bib_key, field_enum in field_lookup.items():
+        if bib_key in bib and field_enum in allowed_fields:
+            fields[field_enum] = bib[bib_key]
+
+    entryid = repository.create(etype, fields)
     return entryid
+
+def validate_year(value_str):
+    if value_str:
+        try:
+            year = int(value_str)
+        except ValueError:
+            return "Year must be a number."
+
+        if year < 0 or year > 3000:
+            return "Year must be between 0-3000"
+    return None

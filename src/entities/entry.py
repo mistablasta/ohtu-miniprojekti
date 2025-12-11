@@ -16,6 +16,7 @@ class Type(Enum):
     ARTICLE = 1
     BOOK = 2
     MISC = 3
+    INPROCEEDINGS = 4
 
     def get_metadata(self):
         return type_map[self]
@@ -35,6 +36,21 @@ class Fields:
     VOLUME = "volume"
     SERIES = "series"
     HOWPUBLISHED = "howpublished"
+    BOOKTITLE = "booktitle"
+    EDITOR = "editor"
+    PAGES = "pages"
+
+    _cache = None
+
+    @staticmethod
+    def all():
+        if Fields._cache is not None:
+            return Fields._cache
+        return [
+            v
+            for k, v in vars(Fields).items()
+            if not k.startswith("_") and isinstance(v, str)
+        ]
 
 # Common fields for a few entry types
 common = [Fields.TITLE, Fields.YEAR, Fields.AUTHOR]
@@ -64,11 +80,23 @@ class TypeMetadata:
                          Fields.MONTH,
                          Fields.NOTE]
     )
+    INPROCEEDINGS = TypeData(
+        required_fields=common + [Fields.BOOKTITLE],
+        optional_fields=[Fields.EDITOR,
+                         Fields.VOLUME,
+                         Fields.NUMBER,
+                         Fields.SERIES,
+                         Fields.PAGES,
+                         Fields.ADDRESS,
+                         Fields.MONTH,
+                         Fields.PUBLISHER]
+    )
 
 type_map = {
     Type.ARTICLE: TypeMetadata.ARTICLE,
     Type.BOOK: TypeMetadata.BOOK,
-    Type.MISC: TypeMetadata.MISC
+    Type.MISC: TypeMetadata.MISC,
+    Type.INPROCEEDINGS: TypeMetadata.INPROCEEDINGS
 }
 
 def type_from_str(name: str) -> Type | None:
