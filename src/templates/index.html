@@ -79,7 +79,7 @@ Bibliography App
             <select name="entry_type" id="type"> 
               <option value="">All Types</option>
               {% for t in types %}
-                <option value="{{ t.name }}" {% if entry_type==t.name %}selected{% endif %}>{{ t.name }}</option>
+                <option value="{{ t.name }}" {% if type ==t.name %}selected{% endif %}>{{ t.name.capitalize() }}</option>
               {% endfor %}
             </select>
           </div>
@@ -121,6 +121,7 @@ Bibliography App
     <a href="/new_entry" class="button general-button">Add entry</a>
     <a id="batch-delete" class="button general-button">Delete selection</a>
     <a id="batch-bibtex" class="button general-button">Export BibTeX</a>
+    <a id="select-all" class="button general-button">Select All</a>
   </div>
 
   <!-- Näyttäää entryt -->
@@ -176,6 +177,7 @@ Bibliography App
         const batchDelete = document.querySelector("#batch-delete");
         const batchBibtex = document.querySelector("#batch-bibtex");
         const checkboxes = document.querySelectorAll(".entry-checkbox");
+        const selectAll = document.querySelector("#select-all")
 
         const showError = msg => (errorBox.textContent = msg || "");
 
@@ -238,7 +240,13 @@ Bibliography App
             }
         }
 
+        let allSelected = false;
+
         batchDelete.addEventListener("click", (event) => runBatchAction("delete"))
         batchBibtex.addEventListener("click", (event) => runBatchAction("bibtex"))
+        selectAll.addEventListener("click", (event) => {
+            allSelected = !allSelected;
+            checkboxes.forEach((checkbox) => checkbox.checked = allSelected)
+        })
     </script>
 {% endblock %}
