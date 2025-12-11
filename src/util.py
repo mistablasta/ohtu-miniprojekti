@@ -72,12 +72,11 @@ def dictionary_to_entry(doi: str):
     if "error" in bib:
         raise ValueError(bib["error"])
 
-    bib_type = bib.get("ENTRYTYPE", "").lower()
-    if bib_type == "article":
-        etype = Type.ARTICLE
-    elif bib_type == "book":
-        etype = Type.BOOK
-    else:
+    bib_type = bib.get("ENTRYTYPE", "").strip().lower()
+
+    try:
+        etype = Type[bib_type.upper()]
+    except KeyError:
         etype = Type.MISC
 
     field_lookup = {f.lower(): f for f in Fields.all()}
